@@ -261,31 +261,39 @@
 
 	  See examples/aggregation/mapReduce for detail
 	*/
-	function mapReduce( collectionName, map, reduce, query, sort, limit="0", out="", keeptemp="false", finalize="", scope, verbose="true", outType="normal"  ){
+	function mapReduce( collectionName, map, reduce, outputTarget, outputType="REPLACE", query, options  ){
 
 		// Confirm our complex defaults exist; need this hunk of muck because CFBuilder 1 breaks with complex datatypes as defaults
-		local.argumentDefaults = {
+		var argumentDefaults = {
 			 query={}
-			,sort={}
-			,scope={}
+			,options={}
 		};
-		for(local.k in local.argumentDefaults)
+		var k = "";
+		for(k in argumentDefaults)
 		{
-			if (!structKeyExists(arguments, local.k))
+			if (!structKeyExists(arguments, k))
 			{
-				arguments[local.k] = local.argumentDefaults[local.k];
+				arguments[k] = local.argumentDefaults[k];
 			}
+		}
+
+		var optionDefaults = {"sort"={}, "limit"="", "scope"={}, "finalize"="", "verbose"=true};
+		structAppend( optionDefaults, arguments.options );
+		optionDefaults.finalize = trim(optionDefaults.finalize);
+
+		var out = {"#lcase(outputType)#" = outputTarget};
+		if(outputType eq "inline"){
+			out = {"inline" = 1};
 		}
 
 		var dbCommand = mongoUtil.createOrderedDBObject(
 			[
-				{"mapreduce"=collectionName}, {"map"=trim(map)}, {"reduce"=trim(reduce)}
-				, {"query"=query}, {"sort"=sort}, {"limit"=limit}, {"keeptemp"=keeptemp}, {"finalize"=trim(finalize)}, {"scope"=scope}, {"verbose"=verbose}, {"outType"=outType}
+				{"mapreduce"=collectionName}, {"map"=trim(map)}, {"reduce"=trim(reduce)}, {"query"=query}, {"out"=out}
 			] );
-		if( trim(arguments.out) neq "" ){
-			dbCommand.append( "out", arguments.out );
-		}
+
+		dbCommand.putAll(optionDefaults);
 		var commandResult = getMongoDB().command( dbCommand );
+
 		var searchResult = this.query( commandResult["result"] ).search();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;

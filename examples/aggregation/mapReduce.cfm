@@ -28,7 +28,7 @@
 	finalize = "function( key, value ){ return value }";
 
 	//#1 use CFMongoDB
-	result = mongo.mapReduce( collectionName="tasks", map=map, reduce=reduce );
+	result = mongo.mapReduce( collectionName="tasks", map=map, reduce=reduce, outputTarget="MapReduceExample" );
 
 	writeOutput("<h1>CFMongoDB mongo.mapReduce()</h1>");
 	writeOutput("<h2>The MapReduceResult object. Expand it for all the goodies</h2>");
@@ -52,7 +52,7 @@
 	//#2: try it using a command instead of the driver's mapReduce function
 	//have to use the "ordered" stuff here because if we do straight struct creation, CF will order them
 	//indeterminantly. MongoDB, for whatever reason, uses the first key as the command name (as opposed to "command" = "mapreduce", which would be infinitely more sensible)
-	dbCommand = u.createOrderedDBObject( [ {"mapreduce"="tasks"}, {"map"=map}, {"reduce"=reduce}, {"finalize"=finalize}, {"verbose" = true} ] );
+	dbCommand = u.createOrderedDBObject( [ {"mapreduce"="tasks"}, {"map"=map}, {"reduce"=reduce}, {"finalize"=finalize}, {"verbose" = true}, {"out" = "MapReduceExample"} ] );
 	result = mongo.getMongoDB().command( dbCommand );
 	//now use a normal cfmongodb query to search the tmp collection created by mapreduce
 	searchResult = mongo.query(result["result"]).search();
@@ -68,7 +68,7 @@
 	writeOutput("<hr>");
 
 	//#3: now use the java driver's minimal signature
-	jResult = mongo.getMongoDBCollection("tasks").mapReduce(map, reduce, javacast("null",""),javacast("null",""));
+	jResult = mongo.getMongoDBCollection("tasks").mapReduce(map, reduce, "MapReduceExample", javacast("null",""));
 	//use a little trick... fill up a SearchResult object with this M/R's cursor
 	mrSearchResult = createObject("cfmongodb.core.SearchResult").init(jResult.results(),{},u);
 	writeOutput("<h1>Java Driver's built-in, minimal mapReduce</h1>");

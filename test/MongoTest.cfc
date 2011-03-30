@@ -476,17 +476,7 @@ import cfmongodb.core.*;
 
 		// Get the result of the last activity from CreatePeople()
 		local.lastActivity = mongo.getLastError();
-
-		// Verify the structure returned by Mongo has not changed
-		var expected = listToArray('n,ok,err');
-		local.actualKeys = structKeyArray(local.lastActivity);
-		arraySort(local.actualKeys,'text');
-		arraySort(expected,'text');
-		assertEquals(
-			 local.actualKeys
-			,expected
-			,'Mongo may have changed the getLastError() response.'
-		);
+		assertFalse( structKeyExists(local.lastActivity, "code"), "code key should not exist when no error is present");
 
 		local.peeps = mongo.query(collectionName=col).search(limit="1").asArray();
 		assertFalse(
@@ -507,19 +497,6 @@ import cfmongodb.core.*;
 			 structKeyExists(local.lastActivity,'code')
 			,'Mongo should be upset a record was duplicated. Check the test.'
 		);
-
-		// We now expect the error code to exist.
-		var expected = listToArray('n,ok,err,code');
-		local.actualKeys = structKeyArray(local.lastActivity);
-		arraySort(local.actualKeys,'text');
-		arraySort(expected,'text');
-		assertEquals(
-			 local.actualKeys
-			,expected
-			,'Mongo may have changed the getLastError() response.'
-		);
-
-		return;
 	}
 
  </cfscript>
