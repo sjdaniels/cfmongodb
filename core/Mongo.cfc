@@ -261,7 +261,7 @@
 
 	  See examples/aggregation/mapReduce for detail
 	*/
-	function mapReduce( collectionName, map, reduce, query, sort, limit="0", out="", keeptemp="false", finalize="", scope, verbose="true", outType="normal"  ){
+	function mapReduce( collectionName, map, reduce, query, sort, limit="0", out="", keeptemp="false", finalize="", scope, verbose="true"  ){
 
 		// Confirm our complex defaults exist; need this hunk of muck because CFBuilder 1 breaks with complex datatypes as defaults
 		local.argumentDefaults = {
@@ -280,12 +280,13 @@
 		var dbCommand = mongoUtil.createOrderedDBObject(
 			[
 				{"mapreduce"=collectionName}, {"map"=trim(map)}, {"reduce"=trim(reduce)}
-				, {"query"=query}, {"sort"=sort}, {"limit"=limit}, {"keeptemp"=keeptemp}, {"finalize"=trim(finalize)}, {"scope"=scope}, {"verbose"=verbose}, {"outType"=outType}
+				, {"query"=query}, {"sort"=sort}, {"limit"=limit}, {"keeptemp"=keeptemp}, {"finalize"=trim(finalize)}, {"scope"=scope}, {"verbose"=verbose}
 			] );
 		if( trim(arguments.out) neq "" ){
 			dbCommand.append( "out", arguments.out );
 		}
 		var commandResult = getMongoDB().command( dbCommand );
+
 		var searchResult = this.query( commandResult["result"] ).search();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;
