@@ -187,6 +187,7 @@ function listToStruct(list){
    	sort = mongoUtil.createOrderedDBObject( sort );
    } else {
    	sort = mongoUtil.toMongo(sort);
+   	writeLog(sort.toString());
    }
    search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
 

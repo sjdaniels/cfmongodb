@@ -4,12 +4,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class CFStrictTyper implements Typer {
 	
 	private final static Typer instance = new CFStrictTyper();
-	
+	private final Pattern isNumeric = Pattern.compile("^[0-9.-]");
 	public static Typer getInstance(){
 		return instance;
 	}
@@ -43,23 +45,24 @@ public class CFStrictTyper implements Typer {
 		if( stringValueLowerCase.equals("true") ) return true;
 		
 		//CF numbers
-		//my testing showed that it was faster to let these fall through rather than check for alpha characters via string.matches() and then parse the numbers. 
-		try {
-			return Integer.parseInt(stringValue);
-		} catch (Exception e) {
-			//nothing; it's not an int
-		}
-		
-		try {
-			return Long.parseLong(stringValue);
-		} catch (Exception e){
-			//nothing; it's not a long
-		}
-		
-		try {
-			return Float.parseFloat(stringValue);
-		} catch (Exception e) {
-			//nothing; it's not a float
+		if( isNumeric.matcher(stringValue).lookingAt() ){
+			try {
+				return Integer.parseInt(stringValue);
+			} catch (Exception e) {
+				//nothing; it's not an int
+			}
+			
+			try {
+				return Long.parseLong(stringValue);
+			} catch (Exception e){
+				//nothing; it's not a long
+			}
+			
+			try {
+				return Float.parseFloat(stringValue);
+			} catch (Exception e) {
+				//nothing; it's not a float
+			}
 		}
 		return value;
 	}

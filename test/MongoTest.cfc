@@ -195,13 +195,14 @@ import cfmongodb.core.*;
 
 	function search_sort_should_be_applied(){
 		var people = createPeople(5, true);
+		debug(col);
 		var asc = mongo.query(col).$eq("name","unittest").search();
 		var desc = mongo.query(col).$eq("name","unittest").search(sort={"name"=-1});
 
 		var ascResults = asc.asArray();
 		var descResults = desc.asArray();
-		//debug( desc.getQuery().toString() );
-
+		debug( desc.getQuery().toString() );
+		debug( desc.getSort().toString() );
 		//debug(ascResults);
 		//debug(descResults);
 
