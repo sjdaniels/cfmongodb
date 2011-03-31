@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class CFStrictTyper implements Typer {
 	
 	private final static Typer instance = new CFStrictTyper();
-	private final Pattern isNumeric = Pattern.compile("^[0-9.-]");
+	private final Pattern isNumeric = Pattern.compile("^[0-9.\\\\+-]");
 	public static Typer getInstance(){
 		return instance;
 	}
