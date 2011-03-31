@@ -277,13 +277,17 @@
 			}
 		}
 
-		var optionDefaults = {"sort"={}, "limit"="", "scope"={}, "finalize"="", "verbose"=true};
+		var optionDefaults = {"sort"={}, "limit"="", "scope"={}, "verbose"=true};
 		structAppend( optionDefaults, arguments.options );
-		optionDefaults.finalize = trim(optionDefaults.finalize);
+		if( structKeyExists(optionDefaults, "finalize") ){
+			optionDefaults.finalize = trim(optionDefaults.finalize);
+		}
 
 		var out = {"#lcase(outputType)#" = outputTarget};
 		if(outputType eq "inline"){
 			out = {"inline" = 1};
+		} else if (outputType eq "replace") {
+			out = outputTarget;
 		}
 
 		var dbCommand = mongoUtil.createOrderedDBObject(

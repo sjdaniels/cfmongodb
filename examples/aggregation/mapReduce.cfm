@@ -32,11 +32,12 @@
 
 	writeOutput("<h1>CFMongoDB mongo.mapReduce()</h1>");
 	writeOutput("<h2>The MapReduceResult object. Expand it for all the goodies</h2>");
-	writeDump(var=result, label="mongo.cfc mapReduceResult", expand="false");
+	writeDump(var=result.getDbCommand(), label="mongo.cfc DbCommand", expand="false");
+	writeDump(var=result.getCommandResult(), label="mongo.cfc CommandResult", expand="false");
+
 	writeOutput("<h2>MapReduceResult.asArray()</h2>");
 	writeDump(var=result.asArray(), label="mapReduceResult.asArray() over collection #result.getMapReduceCollectionName()#");
 	writeOutput("<hr>");
-
 	//#1.5: perform additional queries against the MapReduce collection
 	filteredResult = mongo.query( result.getMapReduceCollectionName() ).$gt("value",10).search(limit=2,sort="value=-1");
 	result.setSearchResult( filteredResult );
