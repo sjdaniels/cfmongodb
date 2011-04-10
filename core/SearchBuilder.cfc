@@ -35,6 +35,7 @@ mongoFactory = '';
 mongoUtil = '';
 
 function init(string coll, any db, any mongoUtil){
+variables.startTS = getTickCount();
  variables.mongoUtil = arguments.mongoUtil;
  variables.mongoFactory = arguments.mongoUtil.getMongoFactory();
  builder = mongoFactory.getObject('com.mongodb.CFBasicDBObjectBuilder');
@@ -118,27 +119,37 @@ function $eq(element,val){
 
 
 function $ne(element,val){
-  return addNumericCriteria(element,val,'$ne');
+  //return addNumericCriteria(element,val,'$ne');
+   builder.add( element, { "$ne" = val } );
+   return  this;
 }
 
 
 function $lt(element,val){
-  return addNumericCriteria(element,val,'$lt');
+  //return addNumericCriteria(element,val,'$lt');
+  builder.add( element, { "$lt" = val } );
+  return  this;
 }
 
 
 function $lte(element,val){
-  return addNumericCriteria(element,val,'$lte');
+  //return addNumericCriteria(element,val,'$lte');
+  builder.add( element, { "$lte" = val } );
+  return this;
 }
 
 
 function $gt(element,val){
-  return addNumericCriteria(element,val,'$gt');
+  //return addNumericCriteria(element,val,'$gt');
+  builder.add( element, { "$gt" = val } );
+  return this;
 }
 
 
 function $gte(element,val){
-  return addNumericCriteria(element,val,'$gte');
+  //return addNumericCriteria(element,val,'$gte');
+  builder.add( element, { "$gte" = val } );
+  return this;
 }
 
 function $exists(element, exists=true){
@@ -163,8 +174,10 @@ function listToStruct(list){
   var item = '';
   var s = {};
   var i = 1;
-  for(i; i lte listlen(list); i++) {
-   s.put(listgetat(list,i),1);
+  var items = listToArray(list);
+  var itemCount = arrayLen(items);
+  for(i; i lte itemCount; i++) {
+   s.put(items[i],1);
   }
   return s;
 }
@@ -187,10 +200,8 @@ function listToStruct(list){
    	sort = mongoUtil.createOrderedDBObject( sort );
    } else {
    	sort = mongoUtil.toMongo(sort);
-   	writeLog(sort.toString());
    }
    search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
-
    return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
   </cfscript>
 </cffunction>
@@ -233,7 +244,7 @@ arbitrary numeric data to java without using JavaCast. CFARGUMENT takes care
 of that. CF9 might too, but most folks are still < CF9.
 
 But, this also proved to be a very good refactor.
- --->
+
 
 <cffunction name="addNumericCriteria" hint="refactored $expressions for numerics">
 	<cfargument name="element" type="string" hint="The element in the document we're searching"/>
@@ -245,7 +256,7 @@ But, this also proved to be a very good refactor.
 		builder.append( element, exp );
 		return this;
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="addArrayCriteria" hint="refactored $expressions for numerics">
 	<cfargument name="element" type="string" hint="The array element in the document we're searching"/>
