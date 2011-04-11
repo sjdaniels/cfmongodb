@@ -12,7 +12,7 @@ One of the most appealing aspects is that data can be created as a ColdFusion st
 <cfscript>
 
 //save
-col = 'my_collection':
+col = mongo.getDBCollection( 'my_collection' );
 my_struct = {
   name = 'Orc #getTickCount()#'
   foo = 'bar'
@@ -20,10 +20,10 @@ my_struct = {
   'tags'=[ 'cool', 'distributed', 'fast' ]
 };
 
-mongo.save(my_struct, col);
+col.save( my_struct );
 
 //query
-result = mongo.query(col).startsWith('name','Orc').search(limit=20);
+result = col.query().startsWith('name','Orc').search(limit=20);
 writeOutput("Found #results.size()# of #results.totalCount()# Orcs");
 
 //use the native mongo cursor. it is case sensitive!

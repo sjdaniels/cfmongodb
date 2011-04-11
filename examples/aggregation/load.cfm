@@ -2,11 +2,13 @@
 <cfinclude template="../initMongo.cfm">
 <cfscript>
 collection = "tasks";
+dbCol = mongo.getDBCollection( collection );
 
-total = mongo.query(collection).count();
-badRecords = mongo.query(collection).$exists("ADDEDTS",false).count();
+total = dbCol.query().count();
+badRecords = dbCol.query().$exists("ADDEDTS",false).count();
+
 if(NOT total OR forceLoad OR badRecords){
-	mongo.remove({},collection);
+	dbCol.remove({});
 	nextNum = 1;
 
 	pending = [];
@@ -35,10 +37,10 @@ if(NOT total OR forceLoad OR badRecords){
 	}
 
 
-	mongo.saveAll( pending, collection );
-	mongo.saveAll( running, collection );
-	mongo.saveAll( paused, collection );
-	mongo.saveAll( completed, collection );
+	dbCol.saveAll( pending );
+	dbCol.saveAll( running );
+	dbCol.saveAll( paused );
+	dbCol.saveAll( completed );
 }
 mongo.close();
 </cfscript>

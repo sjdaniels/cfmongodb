@@ -6,14 +6,15 @@
 
 <cfscript>
 	collection = "geoexamples";
+	dbCol = mongo.getDBCollection( collection );
 
 	try {
 		//only need to do this once, but here for illustration
-		indexes = mongo.ensureGeoIndex("LOC", collection);
+		indexes = dbCol.ensureGeoIndex("LOC");
 		writeDump(indexes);
 
 		//as of this writing, you can perform geo queries like so:
-		nearResult = mongo.query( collection ).add( "LOC", {"$near" = [38,-85]} ).search(limit=10);
+		nearResult = dbCol.query().add( "LOC", {"$near" = [38,-85]} ).search(limit=10);
 		writeDump( var = nearResult.asArray(), label = "$near result" );
 	}
 		catch(Any e){

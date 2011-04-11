@@ -104,5 +104,12 @@
 		var ts = doc["_id"].getTime();
 		return createObject("java", "java.util.Date").init(ts);
 	}
+
+	/**
+	* Whether this doc is an instance of a CFMongoDB CFBasicDBObject
+	*/
+	function isCFBasicDBObject( doc ){
+		return NOT isSimpleValue( doc ) AND getMetadata( doc ).getCanonicalName() eq "com.mongodb.CFBasicDBObject";
+	}
 </cfscript>
 </cfcomponent>

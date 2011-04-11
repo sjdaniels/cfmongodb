@@ -7,6 +7,7 @@
 
 <cfscript>
 	collectionName = "tasks";
+	dbCol = mongo.getDBCollection( collectionName );
 
 	reduce = "
 		function(obj,agg) {
@@ -34,8 +35,7 @@
 	";
 
 	//This is how to do it with CFMongoDB. Note that the order of arguments is slightly different from the Java Driver's version
-	newStatusGroups = mongo.group(
-		collectionName=collectionName,
+	newStatusGroups = dbCol.group(
 		keys="STATUS,OWNER",
 		initial={TOTAL=0, TOTALTIMETOCOMPLETE=0, TOTALPENDINGTIME=0, VALS=[]},
 		reduce=reduce,
@@ -45,7 +45,7 @@
 
 
 	//This is how to do it with Java. Note use of mongoUtil to properly format the arguments
-	collection = mongo.getMongoDBCollection(collectionName);
+	collection = dbCol.getMongoDBCollection();
 	mongoUtil = mongo.getMongoUtil();
 	keys = mongoUtil.createOrderedDBObject( [{STATUS=true}, {OWNER=true}] );
 	emptyCondition = mongoUtil.toMongo({});

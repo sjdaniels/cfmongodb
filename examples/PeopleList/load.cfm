@@ -3,8 +3,8 @@
 <cfscript>
 mongo = application.mongo;
 collection = application.collection;
-
-counters = mongo.distinct( "COUNTER",collection );
+dbCol = mongo.getDBCollection( collection );
+counters = dbCol.distinct( "COUNTER" );
 arraySort( counters, "numeric", "desc"  );
 
 if( NOT arrayIsEmpty(counters) ){
@@ -30,5 +30,5 @@ for( i = nextNum; i LTE nextNum + 50; i++ ){
 	arrayAppend( coolPeople, doc );
 }
 
-mongo.saveAll( coolPeople, collection );
+dbCol.saveAll( coolPeople );
 </cfscript>

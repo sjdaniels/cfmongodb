@@ -5,9 +5,8 @@
 
     DSL for MongoDB searches:
 
-    mongo.query('collection_name').
-
-    results = mongo.startsWith('name','foo').  //string
+    query = collection.query().
+    				startsWith('name','foo').  //string
                     endsWith('title','bar').   //string
                     like('field','value').   //string
 					          regex('field','value').    //string
@@ -24,7 +23,7 @@
                     before('field','value').   //date
                     search('title,author,date', limit, start);
 
-    search(keys=[keys_to_return],limit=num,start=num);
+    results = query.search(keys=[keys_to_return],limit=num,start=num);
 
 -------------------------------------------------------------------------------------*/
 

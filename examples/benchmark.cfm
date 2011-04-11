@@ -9,7 +9,10 @@
 
 	//we'll create/use a 'people' collection
 	collection = "datadump";
-	metricColl = "metrics";
+	metricsCollection = "metrics";
+
+	dbCol = mongo.getDBCollection( collection );
+	metricsCol = mongo.getDBCollection( metricsCollection );
 
 	dataCreateStart = getTickCount();
 	coolPeople = [];
@@ -35,12 +38,12 @@
 
 	saveStart = getTickCount();
 
-	mongo.saveAll( coolPeople, collection );
+	dbCol.saveAll( coolPeople );
 
 	saveTotal = getTickCount() - saveStart;
 
 	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='structs', USEJL=url.useJavaLoader, PRODUCT=serverName };
-	mongo.save( stat, metricColl );
+	metricsCol.save( stat );
 
 
 	dataCreateStart = getTickCount();
@@ -67,12 +70,12 @@
 
 	saveStart = getTickCount();
 
-	mongo.saveAll( coolPeople, collection );
+	dbCol.saveAll( coolPeople );
 
 	saveTotal = getTickCount() - saveStart;
 
 	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='dbos', USEJL=url.useJavaLoader, PRODUCT=serverName };
-	mongo.save( stat, metricColl );
+	metricsCol.save( stat );
 
 
 

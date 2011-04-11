@@ -5,7 +5,8 @@
 <cfparam name="url.sort" default="NAME">
 <cfparam name="url.direction" default="1">
 
-<cfset results = application.mongo.query(application.collection)
+<cfset dbCol = application.mongo.getDBCollection( application.collection )>
+<cfset results = dbCol.query()
 						.search(skip = url.skip, limit = url.limit, sort = "#ucase(url.sort)#=#url.direction#")>
 
 <cfset people = results.asArray()>

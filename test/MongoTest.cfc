@@ -18,6 +18,7 @@ import cfmongodb.core.*;
 	function setUp(){
 		mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
 		col = 'people';
+		dbCol = mongo.getDBCollection( col );
 		atomicCol = 'atomictests';
 		deleteCol = 'deletetests';
 		types = {
@@ -155,6 +156,14 @@ import cfmongodb.core.*;
 	  id = mongo.save( doc, col );
 	  assert( NOT isSimpleValue(id) );
 	  mongo.remove( doc, col );
+	}
+
+	function save_should_update_existing(){
+		var id = dbCol.save( doc );
+
+		doc.somethingnew = getTickCount();
+		dbCol.save( doc );
+		assertEquals( id, doc["_id"] );
 	}
 
 	function saveAll_should_return_immediately_if_no_docs_present(){

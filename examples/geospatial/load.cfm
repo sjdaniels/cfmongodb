@@ -3,12 +3,13 @@
 
 <cfscript>
 	collection = "geoexamples";
-	total = mongo.query( collection ).count();
+	dbCol = mongo.getDBCollection( collection );
+	total = dbCol.query().count();
 
 	if( total eq 0 OR forceLoad ){
-		mongo.remove( {}, collection );
+		dbCol.remove( {} );
 		rows = deserializeJson( fileRead(expandPath('geo.json')) );
-		mongo.saveAll( rows, collection );
+		dbCol.saveAll( rows );
 	}
 
 	mongo.close();
