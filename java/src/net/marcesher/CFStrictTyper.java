@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 public class CFStrictTyper implements Typer {
 	
 	private final static Typer instance = new CFStrictTyper();
-	private final Pattern isNumeric = Pattern.compile("^[0-9.\\\\+-]");
+	//props: http://www.regular-expressions.info/floatingpoint.html
+	private final Pattern isNumeric = Pattern.compile("[-\\\\+]?[0-9]*.?[0-9]+");
 	public static Typer getInstance(){
 		return instance;
 	}
@@ -44,8 +45,8 @@ public class CFStrictTyper implements Typer {
 		if( stringValueLowerCase.equals("false") ) return false;
 		if( stringValueLowerCase.equals("true") ) return true;
 		
-		//CF numbers
-		if( isNumeric.matcher(stringValue).lookingAt() ){
+		//CF numbers. My benchmarks show this is much faster than letting them all fall through and try/catching strings every time.
+		if( isNumeric.matcher(stringValue).matches() ){
 			try {
 				return Integer.parseInt(stringValue);
 			} catch (Exception e) {

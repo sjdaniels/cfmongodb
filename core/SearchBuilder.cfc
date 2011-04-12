@@ -23,7 +23,7 @@
                     before('field','value').   //date
                     search('title,author,date', limit, start);
 
-    results = query.search(keys=[keys_to_return],limit=num,start=num);
+    results = query.find(keys=[keys_to_return],limit=num,start=num);
 
 -------------------------------------------------------------------------------------*/
 
@@ -180,12 +180,9 @@ function listToStruct(list){
   }
   return s;
 }
-
-
-
 </cfscript>
 
-<cffunction name="search">
+<cffunction name="find">
   <cfargument name="keys" type="string" required="false" default="" hint="A list of keys to return" />
   <cfargument name="skip" type="numeric" required="false" default="0" hint="the number of items to skip"/>
   <cfargument name="limit" type="numeric" required="false" default="0" hint="Number of the maximum items to return" />
@@ -203,6 +200,15 @@ function listToStruct(list){
    search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
    return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
   </cfscript>
+</cffunction>
+
+<!--- for backwards compatibility with older api --->
+<cffunction name="search">
+  <cfargument name="keys" type="string" required="false" default="" hint="A list of keys to return" />
+  <cfargument name="skip" type="numeric" required="false" default="0" hint="the number of items to skip"/>
+  <cfargument name="limit" type="numeric" required="false" default="0" hint="Number of the maximum items to return" />
+  <cfargument name="sort" type="any" required="false" default="#structNew()#" hint="A struct or string representing how the items are to be sorted" />
+  <cfreturn this.find(argumentcollection=arguments)>
 </cffunction>
 
 <cffunction name="count" output="false" access="public" returntype="numeric" hint="">

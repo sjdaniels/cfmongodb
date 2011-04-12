@@ -10,6 +10,7 @@
 
 	try {
 		//only need to do this once, but here for illustration
+		dbCol.dropIndexes();
 		indexes = dbCol.ensureGeoIndex("LOC");
 		writeDump(indexes);
 

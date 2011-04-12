@@ -343,8 +343,7 @@
 		if( isNumeric(arguments.min) and isNumeric(arguments.max) ){
 			options = {"min" = arguments.min, "max" = arguments.max};
 		}
-		//need to do this bit of getObject ugliness b/c the CFBasicDBObject will convert "2d" to a double. whoops.
-		collection.ensureIndex( mongoUtil.getMongoFactory().getObject("com.mongodb.BasicDBObject").init(doc), mongoUtil.toMongo(options) );
+		collection.ensureIndex( mongoUtil.toMongo(doc), mongoUtil.toMongo(options) );
 		return getIndexes( collectionName, mongoConfig );
 	}
 
