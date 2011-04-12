@@ -23,7 +23,7 @@ my_struct = {
 col.save( my_struct );
 
 //query
-result = col.query().startsWith('name','Orc').search(limit=20);
+result = col.query().startsWith('name','Orc').find(limit=20);
 writeOutput("Found #results.size()# of #results.totalCount()# Orcs");
 
 //use the native mongo cursor. it is case sensitive!
