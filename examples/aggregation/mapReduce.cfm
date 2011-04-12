@@ -46,7 +46,7 @@
 
 	//#1.5: perform additional queries against the MapReduce collection
 	mrCol = mongo.getDBCollection( mapReduceOutputCollectionName );
-	filteredResult = mrCol.query().$gt("value",10).search(limit=2,sort="value=-1");
+	filteredResult = mrCol.query().$gt("value",10).find(limit=2,sort="value=-1");
 	result.setSearchResult( filteredResult );
 
 	writeOutput("<h1>Perform additional searches on the CFMongoDB MapReduce result</h1>");
@@ -65,7 +65,7 @@
 
 	//now use a normal cfmongodb query to search the tmp collection created by mapreduce
 	mrCol = mongo.getDBCollection( mapReduceOutputCollectionName );
-	searchResult = mrCol.query().search();
+	searchResult = mrCol.query().find();
 
 	writeOutput("<h1>Java getMongoDB().command()</h1>");
 	writeOutput("<h2>The command object</h2>");
@@ -73,7 +73,7 @@
 
 	writeOutput("<h2>The result of .command()</h2>");
 	writeDump(var=result, expand=false);
-	writeOutput("<h2>Passing the result's temp collection name through CFMongoDB.query().search()</h2>");
+	writeOutput("<h2>Passing the result's temp collection name through CFMongoDB.query().find()</h2>");
 	writeDump(var=searchResult.asArray(), expand=false);
 	writeOutput("<hr>");
 

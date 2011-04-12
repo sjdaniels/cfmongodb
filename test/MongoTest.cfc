@@ -74,12 +74,12 @@ import cfmongodb.core.*;
 	  doc['_id'] = mongo.save( doc, deleteCol );
 	  //debug(doc);
 
-	  results = mongo.query(deleteCol).$eq('somenumber',1).search();
+	  results = mongo.query(deleteCol).$eq('somenumber',1).find();
 	  //debug(results.getQuery().toString());
 	  //debug(results.asArray());
 
 	  var writeResult = mongo.remove( doc, deleteCol );
-	  results = mongo.query(deleteCol).$eq('name','delete me').search();
+	  results = mongo.query(deleteCol).$eq('name','delete me').find();
 	  //debug(results.getQuery().toString());
 	  assertEquals( 0, results.size() );
 	}
@@ -100,7 +100,7 @@ import cfmongodb.core.*;
 
 
 	  mongo.save(doc,col);
-	  results = mongo.query(col).startsWith('name','jabber').search();
+	  results = mongo.query(col).startsWith('name','jabber').find();
 
 
 	  //debug(results.getQuery().toString());
@@ -109,7 +109,7 @@ import cfmongodb.core.*;
 	  debug(replace_this);
 	  replace_this['name'] = 'bill';
 	  mongo.update( replace_this, col );
-	  results = mongo.query(col).$eq('name', 'bill' ).search();
+	  results = mongo.query(col).$eq('name', 'bill' ).find();
 	  debug(results.asArray());
 	  var finalSize = results.size();
 	  //debug(finalSize);
@@ -120,12 +120,12 @@ import cfmongodb.core.*;
 
 
 	function testSearch(){
-	  var initial = mongo.query(col).startsWith('name','unittest').search().asArray();
+	  var initial = mongo.query(col).startsWith('name','unittest').find().asArray();
 	  //debug(initial);
 
 	  var addNew = 5;
 	  var people = createPeople( addNew, true );
-	  var afterSave = mongo.query(col).startsWith('name','unittest').search().asArray();
+	  var afterSave = mongo.query(col).startsWith('name','unittest').find().asArray();
 
 	  assertEquals( arrayLen(afterSave), arrayLen(initial) + addNew );
 	}
@@ -205,8 +205,8 @@ import cfmongodb.core.*;
 	function search_sort_should_be_applied(){
 		var people = createPeople(5, true);
 		debug(col);
-		var asc = mongo.query(col).$eq("name","unittest").search();
-		var desc = mongo.query(col).$eq("name","unittest").search(sort={"name"=-1});
+		var asc = mongo.query(col).$eq("name","unittest").find();
+		var desc = mongo.query(col).$eq("name","unittest").find(sort={"name"=-1});
 
 		var ascResults = asc.asArray();
 		var descResults = desc.asArray();
@@ -222,8 +222,8 @@ import cfmongodb.core.*;
 		var people = createPeople(5, true);
 		var limit = 2;
 
-		var full = mongo.query(col).$eq("name","unittest").search();
-		var limited = mongo.query(col).$eq("name","unittest").search(limit=limit);
+		var full = mongo.query(col).$eq("name","unittest").find();
+		var limited = mongo.query(col).$eq("name","unittest").find(limit=limit);
 		assertEquals(limit, limited.size());
 		assertTrue( full.size() GT limited.size() );
 	}
@@ -231,8 +231,8 @@ import cfmongodb.core.*;
 	function search_skip_should_be_applied(){
 		var people = createPeople(5, true);
 		var skip = 1;
-		var full = mongo.query(col).$eq("name","unittest").search();
-		var skipped = mongo.query(col).$eq("name","unittest").search(skip=skip);
+		var full = mongo.query(col).$eq("name","unittest").find();
+		var skipped = mongo.query(col).$eq("name","unittest").find(skip=skip);
 
 		assertEquals(full.asArray()[2] , skipped.asArray()[1], "lemme splain, Lucy: since we're skipping 1, then the first element of skipped should be the second element of full" );
 	}
@@ -241,7 +241,7 @@ import cfmongodb.core.*;
 		createPeople(2, true, "not unit test");
 
 		mongo.ensureIndex(["nowaythiscolumnexists"], col);
-		var allresults = mongo.query(col).search();
+		var allresults = mongo.query(col).find();
 		//debug(allresults.size());
 		var all = mongo.query(col).count();
 		assertTrue( all GT 0 );
@@ -288,7 +288,7 @@ import cfmongodb.core.*;
 
 
 		//get total inprocess count
-		var inprocess = mongo.query(atomicCol).$eq("INPROCESS",false).search().size();
+		var inprocess = mongo.query(atomicCol).$eq("INPROCESS",false).find().size();
 
 
 		//guard
@@ -307,7 +307,7 @@ import cfmongodb.core.*;
 		assertEquals( cgi.SERVER_NAME, new.owner );
 
 
-		var newinprocess = mongo.query(atomicCol).$eq("INPROCESS",false).search();
+		var newinprocess = mongo.query(atomicCol).$eq("INPROCESS",false).find();
 		//debug(newinprocess.getQuery().toString());
 
 		assertEquals(inprocess-1, newinprocess.size());
@@ -416,7 +416,7 @@ import cfmongodb.core.*;
 		var result = mongo.getMongoDB().command( command );
 		//debug(result);
 
-		var result = mongo.query("system.profile").search(limit=50,sort={"ts"=-1}).asArray();
+		var result = mongo.query("system.profile").find(limit=50,sort={"ts"=-1}).asArray();
 		//debug(result);
 
 		command = u.toMongo({"profile"=0});
@@ -488,7 +488,7 @@ import cfmongodb.core.*;
 		local.lastActivity = mongo.getLastError();
 		assertFalse( structKeyExists(local.lastActivity, "code"), "code key should not exist when no error is present");
 
-		local.peeps = mongo.query(collectionName=col).search(limit="1").asArray();
+		local.peeps = mongo.query(collectionName=col).find(limit="1").asArray();
 		assertFalse(
 			arrayIsEmpty(local.peeps)
 			,'Some people should have been returned.'

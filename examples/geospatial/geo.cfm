@@ -15,7 +15,7 @@
 		writeDump(indexes);
 
 		//as of this writing, you can perform geo queries like so:
-		nearResult = dbCol.query().add( "LOC", {"$near" = [38,-85]} ).search(limit=10);
+		nearResult = dbCol.query().add( "LOC", {"$near" = [38,-85]} ).find(limit=10);
 		writeDump( var = nearResult.asArray(), label = "$near result" );
 	}
 		catch(Any e){

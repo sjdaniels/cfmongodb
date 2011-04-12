@@ -44,7 +44,7 @@
 	  Finally, you'll use various "execution" functions on the SearchBuilder to get a SearchResult object,
 	  which provides useful functions for working with your results.
 
-	  kidSearch = collection.query().between("KIDS.AGE", 2, 30).search();
+	  kidSearch = collection.query().between("KIDS.AGE", 2, 30).find();
 	  writeDump( kidSearch.asArray() );
 
 	  See gettingstarted.cfm for many examples
@@ -188,7 +188,7 @@
 		dbCommand.putAll(optionDefaults);
 		var commandResult = getMongoDB().command( dbCommand );
 
-		var searchResult = this.query( commandResult["result"] ).search();
+		var searchResult = this.query( commandResult["result"] ).find();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;
 	}

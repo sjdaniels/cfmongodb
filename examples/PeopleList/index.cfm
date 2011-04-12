@@ -7,7 +7,7 @@
 
 <cfset dbCol = application.mongo.getDBCollection( application.collection )>
 <cfset results = dbCol.query()
-						.search(skip = url.skip, limit = url.limit, sort = "#ucase(url.sort)#=#url.direction#")>
+						.find(skip = url.skip, limit = url.limit, sort = "#ucase(url.sort)#=#url.direction#")>
 
 <cfset people = results.asArray()>
 

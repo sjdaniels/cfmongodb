@@ -88,34 +88,34 @@ h2{
 	dbCol.saveAll( coolPeople );
 
 	//find Marc
-	marc = dbCol.query().$eq("NAME", "Marc").search();
+	marc = dbCol.query().$eq("NAME", "Marc").find();
 	showResult( marc, "Marcs" );
 
 
 	//find riders of Specialized bikes
-	specialized = dbCol.query().$eq("BIKE", "Specialized").search();
+	specialized = dbCol.query().$eq("BIKE", "Specialized").find();
 	showResult( specialized, "Specialized riders" );
 
 	//find the 3rd and 4th Specialized bike riders, sorted by "ts" descending
-	specialized = dbCol.query().$eq("BIKE", "Specialized").search( skip=2, limit=2, sort="TS=-1" );
+	specialized = dbCol.query().$eq("BIKE", "Specialized").find( skip=2, limit=2, sort="TS=-1" );
 	showResult( specialized, "Specialized riders, skipping to 3, limiting to 2, sorting by ts desc (skip is 0-based!)" );
 
 	//find riders with counter between 1 and 3, sorted by "ts" descending
 	specialized = dbCol.query()
 						.$eq("BIKE", "Specialized")
 						.between("COUNTER", 1, 3)
-						.search( sort="TS=-1" );
+						.find( sort="TS=-1" );
 	showResult( specialized, "Specialized riders, COUNTER between 1 and 3" );
 
 	//find riders with counter between 1 and 3 Exclusive, sorted by "ts" descending
 	specialized = dbCol.query()
 						.$eq("BIKE", "Specialized")
 						.betweenExclusive("COUNTER", 1, 3)
-						.search( sort="TS=-1" );
+						.find( sort="TS=-1" );
 	showResult( specialized, "Specialized riders, COUNTER between 1 and 3 Exclusive" );
 
 	//find people with kids aged between 2 and 30
-	kidSearch = dbCol.query().between("KIDS.AGE", 2, 30).search(keys="NAME,COUNTER,KIDS", sort="COUNTER=-1");
+	kidSearch = dbCol.query().between("KIDS.AGE", 2, 30).find(keys="NAME,COUNTER,KIDS", sort="COUNTER=-1");
 	showResult( kidSearch, "People with kids aged between 2 and 30" );
 
 
@@ -128,7 +128,7 @@ h2{
 
 	//using count(), SearchResult.totalCount(), and SearchResult.size()
 	totalPeople = dbCol.query().between("KIDS.AGE", 2, 100).count();
-	searchResult =  dbCol.query().between("KIDS.AGE", 2, 100).search(limit=3);//using limit to show difference between SearchResult.size() and totalCount()
+	searchResult =  dbCol.query().between("KIDS.AGE", 2, 100).find(limit=3);//using limit to show difference between SearchResult.size() and totalCount()
 	alsoTotalPeople = searchResult.totalCount(); //equivalent to query().count()!
 	sizeWithLimit = searchResult.size();
 	writeOutput("<h2>How to count things</h2>");
@@ -147,7 +147,7 @@ h2{
 	// 2) updating one or more documents based on criteria. You almost always need to use a $set in this situation!!!
 
 	//updating a single pre-fetched document
-	person = dbCol.query().search(limit="1").asArray()[1];
+	person = dbCol.query().find(limit="1").asArray()[1];
 	person.FAVORITECIGAR = "H. Upmann Cubano";
 	person.MODTS = now();
 	arrayAppend( person.KIDS, {NAME = "Pauly", AGE = 0} );
@@ -191,7 +191,7 @@ h2{
 
 	dbCol.update( doc = update, query = query, multi=true );
 
-	oldsters = dbCol.query().$eq("NAME","Oldster").search().asArray();
+	oldsters = dbCol.query().$eq("NAME","Oldster").find().asArray();
 
 	writeOutput("<h2>Updating multiple documents</h2>");
 	writeDump( var=oldsters, label="Even EmoHipsters get old some day", expand="false");
@@ -208,7 +208,7 @@ h2{
 	victims = {TORTUREMACHINE = true};
 	dbCol.update( doc = suckLifeOut, query = victims, multi = true );
 
-	rugenVictims = dbCol.query().$eq("TORTUREMACHINE", true).search().asArray();
+	rugenVictims = dbCol.query().$eq("TORTUREMACHINE", true).find().asArray();
 
 	writeOutput("<h2>Atomically incrementing with $inc</h2>");
 	writeDump( var = cast, label="Before the movie started", expand=false);
@@ -266,7 +266,7 @@ h2{
 
 	//show how you get timestamp creation on all documents, for free, when using the default ObjectID
 	mongoUtil = mongo.getMongoUtil();
-	all = dbCol.query().search().asArray();
+	all = dbCol.query().find().asArray();
 	first = all[1];
 	last = all[ arrayLen(all) ];
 	writeOutput("<h2>Timestamps from Doc</h2>");
