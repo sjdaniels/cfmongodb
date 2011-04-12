@@ -20,8 +20,8 @@
                     mod('field','value').      //numeric
                     size('field','value').     //numeric
                     after('field','value').    //date
-                    before('field','value').   //date
-                    search('title,author,date', limit, start);
+                    before('field','value');   //date
+
 
     results = query.find(keys=[keys_to_return],limit=num,start=num);
 
