@@ -39,6 +39,7 @@
 	*/
 	function toMongo(any data){
 		//for now, assume it's a struct to DBO conversion
+		if( isCFBasicDBObject(data) ) return data;
 		var dbo = newDBObject();
 		dbo.putAll( data );
 		return dbo;
@@ -95,6 +96,18 @@
 			dbo.append( key, value );
 		}
 		return dbo;
+	}
+
+	function listToStruct(list){
+		var item = '';
+		var s = {};
+		var i = 1;
+		var items = listToArray(list);
+		var itemCount = arrayLen(items);
+		for(i; i lte itemCount; i++) {
+			s.put(items[i],1);
+		}
+		return s;
 	}
 
 	/**

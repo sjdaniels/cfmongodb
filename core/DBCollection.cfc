@@ -1,4 +1,6 @@
-<cfcomponent>
+<cfcomponent accessors="true">
+
+	<cfproperty name="mongoUtil">
 
 <cfscript>
 	variables.collectionName = "";
@@ -13,6 +15,14 @@
 		return this;
 	}
 
+	private function toMongo( doc ){
+		return mongoUtil.toMongo( doc );
+	}
+
+	private function toCF( dbObject ){
+		return mongoUtil.toCF( dbObject );
+	}
+
 	/**
 	* Get the underlying Java driver's DB object
 	*/
@@ -23,7 +33,7 @@
 	/**
 	* Get the underlying Java driver's DBCollection object for the given collection
 	*/
-	function getMongoDBCollection( collectionName ){
+	function getMongoDBCollection(){
 		var jMongoDB = getMongoDB();
 		return jMongoDB.getCollection( collectionName );
 	}
@@ -35,7 +45,30 @@
 	*/
 	function findById( id ){
 		var result = collection.findOne( mongoUtil.newIDCriteriaObject( id ) );
-		return mongoUtil.toCF( result );
+		return toCF( result );
+	}
+
+	function findOne( struct criteria ){
+		var result = collection.findOne( toMongo( criteria ) );
+		return toCF( result );
+	}
+
+	function find( struct criteria, string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
+		var key_exp = mongoUtil.listToStruct(arguments.keys);
+		var _keys = toMongo(key_exp);
+		var search_results = [];
+		if( isSimpleValue(sort) ) {
+			sort = mongoUtil.createOrderedDBObject( sort );
+		} else {
+			sort = toMongo(sort);
+		}
+		criteria = toMongo( criteria );
+		search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
+		return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
+	}
+
+	function count( struct criteria ){
+		return collection.count( toMongo(criteria) );
 	}
 
 	/**
@@ -50,7 +83,8 @@
 	  See gettingstarted.cfm for many examples
 	*/
 	function query(){
-	   return new SearchBuilder( collectionName, getMongoDB(mongoConfig) , mongoUtil );
+	   //return new SearchBuilder( collectionName, getMongoDB(mongoConfig) , mongoUtil );
+	   return new SearchBuilder( this );
 	}
 
 	/**
@@ -85,26 +119,26 @@
 
 		//must apply $set, otherwise old struct is overwritten
 		if( applySet ){
-			update = { "$set" = mongoUtil.toMongo(update)  };
+			update = { "$set" = toMongo(update)  };
 		}
 		if( not isStruct( sort ) ){
 			sort = mongoUtil.createOrderedDBObject(sort);
 		} else {
-			sort = mongoUtil.toMongo( sort );
+			sort = toMongo( sort );
 		}
 
 		var updated = collection.findAndModify(
-			mongoUtil.toMongo(query),
-			mongoUtil.toMongo(fields),
+			toMongo(query),
+			toMongo(fields),
 			sort,
 			remove,
-			mongoUtil.toMongo(update),
+			toMongo(update),
 			returnNew,
 			upsert
 		);
 		if( isNull(updated) ) return {};
 
-		return mongoUtil.toCF(updated);
+		return toCF(updated);
 	}
 
 	/**
@@ -137,7 +171,7 @@
 			structDelete(dbCommand.group,"key");
 			dbCommand.group["$keyf"] = trim(keyf);
 		}
-		var result = getMongoDB().command( mongoUtil.toMongo(dbCommand) );
+		var result = getMongoDB().command( toMongo(dbCommand) );
 		return result["retval"];
 	}
 
@@ -203,7 +237,7 @@
 	   if( structKeyExists(doc, "_id") ){
 	       update( doc = doc );
 	   } else {
-		   var dbObject =  mongoUtil.toMongo(doc);
+		   var dbObject =  toMongo(doc);
 		   collection.insert( [dbObject] );
 		   doc["_id"] =  dbObject.get("_id");
 	   }
@@ -226,7 +260,7 @@
 			var total = arrayLen(docs);
 			var allDocs = [];
 			for( i=1; i LTE total; i++ ){
-				arrayAppend( allDocs, mongoUtil.toMongo(docs[i]) );
+				arrayAppend( allDocs, toMongo(docs[i]) );
 			}
 			collection.insert(allDocs);
 		}
@@ -261,15 +295,15 @@
 
 	   if( structIsEmpty(query) ){
 		  query = mongoUtil.newIDCriteriaObject(doc['_id'].toString());
-		  var dbo = mongoUtil.toMongo(doc);
+		  var dbo = toMongo(doc);
 	   } else{
-	   	  query = mongoUtil.toMongo(query);
+	   	  query = toMongo(query);
 		  var keys = structKeyList(doc);
 		  if( applySet ){
-		  	doc = { "$set" = mongoUtil.toMongo(doc)  };
+		  	doc = { "$set" = toMongo(doc)  };
 		  }
 	   }
-	   var dbo = mongoUtil.toMongo(doc);
+	   var dbo = toMongo(doc);
 	   collection.update( query, dbo, upsert, multi );
 	}
 
@@ -286,7 +320,7 @@
 		if( structKeyExists(doc, "_id") ){
 			return removeById( doc["_id"] );
 		}
-	   var dbo = mongoUtil.toMongo(doc);
+	   var dbo = toMongo(doc);
 	   var writeResult = collection.remove( dbo );
 	   return writeResult;
 	}
@@ -298,6 +332,13 @@
 	*/
 	function removeById( id ){
 		return collection.remove( mongoUtil.newIDCriteriaObject(id) );
+	}
+
+	/**
+	* drops this collection
+	*/
+	function drop(){
+		collection.drop();
 	}
 
 	/**
@@ -328,7 +369,7 @@
 			indexName = listAppend( indexName, fieldName, "_");
 	 	}
 
-	 	var dbo = mongoUtil.toMongo( doc );
+	 	var dbo = toMongo( doc );
 	 	collection.ensureIndex( dbo, "_#indexName#_", unique );
 
 	 	return getIndexes(collectionName, mongoConfig);
@@ -343,7 +384,7 @@
 		if( isNumeric(arguments.min) and isNumeric(arguments.max) ){
 			options = {"min" = arguments.min, "max" = arguments.max};
 		}
-		collection.ensureIndex( mongoUtil.toMongo(doc), mongoUtil.toMongo(options) );
+		collection.ensureIndex( toMongo(doc), toMongo(options) );
 		return getIndexes( collectionName, mongoConfig );
 	}
 

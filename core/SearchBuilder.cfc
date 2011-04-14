@@ -29,17 +29,18 @@
 
 builder = '';
 pattern = '';
+dbCollection = '';
 collection = '';
 mongoFactory = '';
 mongoUtil = '';
 
-function init(string coll, any db, any mongoUtil){
-variables.startTS = getTickCount();
- variables.mongoUtil = arguments.mongoUtil;
- variables.mongoFactory = arguments.mongoUtil.getMongoFactory();
+function init( DBCollection ){
+ variables.dbCollection = arguments.DBCollection;
+ variables.mongoUtil = DBCollection.getMongoUtil();
+ variables.mongoFactory = mongoUtil.getMongoFactory();
  builder = mongoFactory.getObject('com.mongodb.CFBasicDBObjectBuilder');
  pattern = createObject('java', 'java.util.regex.Pattern');
- collection = db.getCollection(coll);
+ collection = DBCollection.getMongoDBCollection();
 }
 
 function builder(){
@@ -169,110 +170,55 @@ function betweenExclusive(element, lower, upper){
 	return this;
 }
 
-function listToStruct(list){
-  var item = '';
-  var s = {};
-  var i = 1;
-  var items = listToArray(list);
-  var itemCount = arrayLen(items);
-  for(i; i lte itemCount; i++) {
-   s.put(items[i],1);
-  }
-  return s;
+function before(string element, date val){
+	var exp = {};
+	var  date = parseDateTime(val);
+	exp['$lte'] = date;
+	builder.add( element, exp );
+	return this;
 }
+
+function after(string element, date val){
+	var exp = {};
+	var  date = parseDateTime(val);
+	exp['$gte'] = date;
+	builder.add( element, exp );
+	return this;
+}
+
+/**
+* @element The array element in the document we're searching
+  @val The value(s) of an element in the array
+  @type $in,$nin,etc.
+*/
+function addArrayCriteria( string element, array val, string type ){
+	var exp = {};
+	exp[type] = val;
+	builder.add( element, exp );
+	return this;
+}
+
+/**
+* @keys A list of keys to return
+  @skip the number of items to skip
+  @limit Number of the maximum items to return
+  @sort A struct or string representing how the items are to be sorted
+*/
+function find( string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
+	return  dbCollection.find( criteria=get(), keys=keys, skip=skip, limit=limit, sort=sort );
+}
+
+function count(){
+	return dbCollection.count( get() );
+}
+
+/**
+* DEPRECATED. Use find() instead
+*/
+function search( string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
+	return  this.find( argumentcollection = arguments );
+}
+
 </cfscript>
-
-<cffunction name="find">
-  <cfargument name="keys" type="string" required="false" default="" hint="A list of keys to return" />
-  <cfargument name="skip" type="numeric" required="false" default="0" hint="the number of items to skip"/>
-  <cfargument name="limit" type="numeric" required="false" default="0" hint="Number of the maximum items to return" />
-  <cfargument name="sort" type="any" required="false" default="#structNew()#" hint="A struct or string representing how the items are to be sorted" />
-  <cfscript>
-   var key_exp = listToStruct(arguments.keys);
-   var _keys = mongoUtil.toMongo(key_exp);
-   var search_results = [];
-   var criteria = get();
-   if( isSimpleValue(sort) ) {
-   	sort = mongoUtil.createOrderedDBObject( sort );
-   } else {
-   	sort = mongoUtil.toMongo(sort);
-   }
-   search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
-   return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
-  </cfscript>
-</cffunction>
-
-<!--- for backwards compatibility with older api --->
-<cffunction name="search">
-  <cfargument name="keys" type="string" required="false" default="" hint="A list of keys to return" />
-  <cfargument name="skip" type="numeric" required="false" default="0" hint="the number of items to skip"/>
-  <cfargument name="limit" type="numeric" required="false" default="0" hint="Number of the maximum items to return" />
-  <cfargument name="sort" type="any" required="false" default="#structNew()#" hint="A struct or string representing how the items are to be sorted" />
-  <cfreturn this.find(argumentcollection=arguments)>
-</cffunction>
-
-<cffunction name="count" output="false" access="public" returntype="numeric" hint="">
-	<cfset var criteria = get()>
-	<cfreturn collection.count(criteria)>
-</cffunction>
-
-
-
-<cffunction name="before">
-  <cfargument name="element" type="string" />
-  <cfargument name="val" type="date" />
-   <cfscript>
-  		var exp = {};
-  		var  date = parseDateTime(val);
-  		exp['$lte'] = date;
-  		builder.add( element, exp );
-  		return this;
-  	</cfscript>
-</cffunction>
-
-
-<cffunction name="after">
-  <cfargument name="element" type="string" />
-  <cfargument name="val" type="date" />
-   <cfscript>
-  		var exp = {};
-  		var  date = parseDateTime(val);
-  		exp['$gte'] = date;
-  		builder.add( element, exp );
-  		return this;
-  	</cfscript>
-</cffunction>
-
-<!---
-Note to self: Using cffunction here because of the ability/need to cast
-arbitrary numeric data to java without using JavaCast. CFARGUMENT takes care
-of that. CF9 might too, but most folks are still < CF9.
-
-But, this also proved to be a very good refactor.
-
-
-<cffunction name="addNumericCriteria" hint="refactored $expressions for numerics">
-	<cfargument name="element" type="string" hint="The element in the document we're searching"/>
-	<cfargument name="val" type="numeric" hint="The comparative value of the element" />
-	<cfargument name="type" type="string" hint="$gt,$lt,etc. The operators - <><=>= ..." />
-	<cfscript>
-		var exp = {};
-		exp[type] = val;
-		builder.append( element, exp );
-		return this;
-	</cfscript>
-</cffunction> --->
-
-<cffunction name="addArrayCriteria" hint="refactored $expressions for numerics">
-	<cfargument name="element" type="string" hint="The array element in the document we're searching"/>
-	<cfargument name="val" type="array" hint="The value(s) of an element in the array" />
-	<cfargument name="type" type="string" hint="$in,$nin,etc." />
-	<cfscript>
-		var exp = {};
-		exp[type] = val;
-		builder.add( element, exp );
-		return this;
-	</cfscript>
-</cffunction>
 
 </cfcomponent>

@@ -107,6 +107,16 @@
 		return this;
 	}
 
+	/**
+	* Gets a CFMongoDB DBCollection object, which wraps the java DBCollection
+	*/
+	function getDBCollection( collectionName ){
+		if( not structKeyExists( variables.collections, collectionName ) ){
+			variables.collections[ collectionName ] = createObject("component", "DBCollection" ).init( collectionName, this );
+		}
+		return variables.collections[ collectionName ];
+	}
+
 
 	/**
 	* Closes the underlying mongodb object. Once closed, you cannot perform additional mongo operations and you'll need to init a new mongo.
@@ -137,14 +147,30 @@
 		return getMongoDB().getLastError();
 	}
 
+
 	/**
-	* Gets a CFMongoDB DBCollection object, which wraps the java DBCollection
+	* Decide whether to use the MongoConfig in the variables scope, the one being passed around as arguments, or create a new one
 	*/
-	function getDBCollection( collectionName ){
-		if( not structKeyExists( variables.collections, collectionName ) ){
-			variables.collections[ collectionName ] = createObject("component", "DBCollection" ).init( collectionName, this );
+	function getMongoConfig(mongoConfig=""){
+		if(isSimpleValue(arguments.mongoConfig)){
+			mongoConfig = variables.mongoConfig;
 		}
-		return variables.collections[ collectionName ];
+		return mongoConfig;
+	}
+
+	/**
+	 * Get the underlying Java driver's Mongo object
+	 */
+	function getMongo(){
+		return variables.mongo;
+	}
+
+	/**
+	 * Get the underlying Java driver's DB object
+	 */
+	function getMongoDB( mongoConfig="" ){
+		var jMongo = getMongo(mongoConfig);
+		return jMongo.getDb(getMongoConfig(mongoConfig).getDefaults().dbName);
 	}
 
 	/**
@@ -252,31 +278,6 @@
 	*/
 	public array function dropIndexes(collectionName, mongoConfig=""){
 		return getDBCollection( collectionName ).dropIndexes();
-	}
-
-	/**
-	* Decide whether to use the MongoConfig in the variables scope, the one being passed around as arguments, or create a new one
-	*/
-	function getMongoConfig(mongoConfig=""){
-		if(isSimpleValue(arguments.mongoConfig)){
-			mongoConfig = variables.mongoConfig;
-		}
-		return mongoConfig;
-	}
-
-	/**
-	 * Get the underlying Java driver's Mongo object
-	 */
-	function getMongo(){
-		return variables.mongo;
-	}
-
-	/**
-	 * Get the underlying Java driver's DB object
-	 */
-	function getMongoDB( mongoConfig="" ){
-		var jMongo = getMongo(mongoConfig);
-		return jMongo.getDb(getMongoConfig(mongoConfig).getDefaults().dbName);
 	}
 
 	/**
