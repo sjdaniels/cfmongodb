@@ -1,7 +1,10 @@
 
 <html>
 	<head>
-
+		<style>
+			* {font-family: Tahoma,Arial,Helvetica,sans-serif;}
+			h1 {color: navy;}
+		</style>
 	</head>
 
 	<body>
