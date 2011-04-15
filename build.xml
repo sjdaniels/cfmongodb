@@ -90,6 +90,7 @@
 	</target>
 	
 	<target name="compile" depends="init">
+		<mkdir dir="java/bin"/>
 		<javac srcdir="java/src" destdir="java/bin" classpathref="project.classpath" />
 	</target>
 	
