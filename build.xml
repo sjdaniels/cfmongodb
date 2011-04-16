@@ -58,6 +58,8 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</path>
+		
+		<property name="MongoDBService" value="'Mongo DB'"/>
 
 		<!-- dump the properties -->
 		<echoproperties prefix="test" />
@@ -99,6 +101,24 @@
 		<jar destfile="lib/cfmongodb.jar" basedir="java/bin" />
 	</target>
 
-
+	<target name="startMongoService" depends="init">
+		<echo message="starting ${MongoDBService}"/>
+		<exec executable="cmd.exe">
+			<arg line="/c"/>
+			<arg line="net"/>
+			<arg line="start"/>
+			<arg line="${MongoDBService}"/>
+		</exec>
+	</target>
+	
+	<target name="stopMongoService" depends="init">
+		<echo message="starting ${MongoDBService}"/>
+		<exec executable="cmd.exe">
+			<arg line="/c"/>
+			<arg line="net"/>
+			<arg line="stop"/>
+			<arg line="${MongoDBService}"/>
+		</exec>
+	</target>
 
 </project>
