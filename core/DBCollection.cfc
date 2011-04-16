@@ -44,20 +44,38 @@
 	}
 
 	/**
-	* For simple mongo _id searches, use findById(), like so:
+	* Returns a single document matching the passed in id (i.e. the mongo _id)
 
-	  byID = collection.findById( url.personId, collection );
+	  usage:
+
+	  byID = collection.findById( url.personId );
 	*/
-	function findById( id ){
+	struct function findById( id ){
 		var result = collection.findOne( mongoUtil.newIDCriteriaObject( id ) );
 		return toCF( result );
 	}
 
-	function findOne( struct criteria ){
+	/**
+	* Find a single document matching the given criteria.
+
+	  usage:
+
+	  doc = collection.findOne( {"age" = 18} );
+	*/
+	struct function findOne( struct criteria ){
 		var result = collection.findOne( toMongo( criteria ) );
 		return toCF( result );
 	}
 
+	/**
+	* Find documents matching the given criteria. Returns a SearchResult object.
+
+	  usage:
+
+	  sort = {"NAME" = -1};
+	  result = collection.find( criteria={"AGE" = {"$gt"=18}}, limit="5", sort=sort );
+	  writeDump( var=result.asArray(), label="For query #result.getQuery().toString()# with sort #result.getSort().toString()#, returning #result.size()# of #result.totalCount()# documents" );
+	*/
 	function find( struct criteria, string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
 		var key_exp = mongoUtil.listToStruct(arguments.keys);
 		var _keys = toMongo(key_exp);
@@ -77,13 +95,14 @@
 	}
 
 	/**
-	* Run a query against MongoDB.
+	* Build a query object, and then execute that query using find()
 	  Query returns a SearchBuilder object, which you'll call functions on.
 	  Finally, you'll use various "execution" functions on the SearchBuilder to get a SearchResult object,
 	  which provides useful functions for working with your results.
 
-	  kidSearch = collection.query().between("KIDS.AGE", 2, 30).find();
-	  writeDump( kidSearch.asArray() );
+	  sort = {"NAME" = -1};
+	  kidSearch = collection.query().between("KIDS.AGE", 2, 30).find( keys="", skip=0, limit=0, sort=sort );
+	  writeDump( var=kidSearch.asArray(), label="For query #kidSearch.getQuery().toString()# with sort #kidSearch.getSort().toString()#, returning #kidSearch.size()# of #kidSearch.totalCount()# documents" );
 
 	  See gettingstarted.cfm for many examples
 	*/
@@ -94,9 +113,9 @@
 	/**
 	* Runs mongodb's distinct() command. Returns an array of distinct values
 	*
-	  distinctAges = collection.distinct( "KIDS.AGE", "people" );
+	  distinctAges = collection.distinct( "KIDS.AGE" );
 	*/
-	function distinct(string key, string collectionName ){
+	function distinct( string key ){
 		return collection.distinct( key );
 	}
 
@@ -110,7 +129,7 @@
 	This function assumes you are using this to *apply* additional changes to the "found" document. If you wish to overwrite, pass overwriteExisting=true. One bristles at the thought
 
 	*/
-	function findAndModify(struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean applySet=true ){
+	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean overwriteExisting=false ){
 		// Confirm our complex defaults exist; need this chunk of muck because CFBuilder 1 breaks with complex datatypes in defaults
 		local.argumentDefaults = {sort={"_id"=1},fields={}};
 		for(local.k in local.argumentDefaults)
@@ -122,7 +141,7 @@
 		}
 
 		//must apply $set, otherwise old struct is overwritten
-		if( applySet ){
+		if( NOT overwriteExisting ){
 			update = { "$set" = toMongo(update)  };
 		}
 		if( not isStruct( sort ) ){
@@ -279,19 +298,21 @@
 	To update a single existing document, simply pass that document and update() will update the document by its _id:
 	 person = person.findById(url.id);
 	 person.something = "something else";
-	 collection.update( person, "people" );
+	 collection.update( person );
 
 	To update a document by a criteria query and have the "doc" argument applied to a single found instance:
 	update = {STATUS = "running"};
 	query = {STATUS = "pending"};
-	collection.update( update, "tasks", query );
+	collection.update( update, query );
 
 	To update multiple documents by a criteria query and have the "doc" argument applied to all matching instances, pass multi=true
-	collection.update( update, "tasks", query, false, true )
+	collection.update( update, query, false, false )
 
 	Pass upsert=true to create a document if no documents are found that match the query criteria
+
+	Pass overwriteExisting=true to overwrite the found document(s) with the doc argument
 	*/
-	function update( doc, query, upsert=false, multi=false, applySet=true ){
+	function update( doc, query, upsert=false, multi=false, overwriteExisting=false ){
 
 		if ( !structKeyExists(arguments, 'query') ){
 			arguments.query = {};
@@ -303,7 +324,7 @@
 	   } else{
 	   	  query = toMongo(query);
 		  var keys = structKeyList(doc);
-		  if( applySet ){
+		  if( not overwriteExisting ){
 		  	doc = { "$set" = toMongo(doc)  };
 		  }
 	   }
@@ -318,9 +339,9 @@
 
 	  Otherwise, "doc" is treated as a "criteria" object. For example, if doc is {STATUS="complete"}, then all documents matching that criteria would be removed.
 
-	  pass an empty struct to remove everything from the collection: collection.remove({}, collection);
+	  pass an empty struct to remove everything from the collection: collection.remove( {} );
 	*/
-	function remove(doc, collectionName ){
+	function remove( doc ){
 		if( structKeyExists(doc, "_id") ){
 			return removeById( doc["_id"] );
 		}
@@ -332,7 +353,7 @@
 	/**
 	* Convenience for removing a document from the collection by the String representation of its ObjectId
 
-		collection.removeById(url.id);
+		collection.removeById( url.id );
 	*/
 	function removeById( id ){
 		return collection.remove( mongoUtil.newIDCriteriaObject(id) );
@@ -402,7 +423,7 @@
 	/**
 	* Drops all indexes from the collection
 	*/
-	public array function dropIndexes( ){
+	public array function dropIndexes(){
 		collection.dropIndexes();
 		return getIndexes();
 	}

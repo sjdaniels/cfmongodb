@@ -171,10 +171,10 @@ h2{
 	person = {NAME = "Ima PHP dev", AGE=12};
 	people.save( person );
 
-	people.update( doc={NAME = "Ima CF Dev", HAPPY = true}, query= {NAME = "Ima PHP dev"}, applySet = false );
+	people.update( doc={NAME = "Ima CF Dev", HAPPY = true}, query= {NAME = "Ima PHP dev"}, overwriteExisting = true );
 	afterUpdate = people.findById( person["_id"] );
 
-	writeOutput("<h2>Updated person by criteria with applySet=false. Notice it OVERWROTE the entire document</h2>");
+	writeOutput("<h2>Updated person by criteria with overwriteExisting=true. Notice it OVERWROTE the entire document</h2>");
 	writeDump(var = person, label="Original", expand=false);
 	writeDump(var = afterUpdate, label = "After update without using $set", expand=false);
 

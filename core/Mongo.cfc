@@ -197,7 +197,7 @@
 	/**
 	* Deprecated. See DBCollection.findAndModify
 	*/
-	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean applySet=true, string collectionName ){
+	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean overwriteExisting=false, string collectionName ){
 		return getDBCollection(collectionName).findAndModify( argumentcollection=arguments );
 	}
 
@@ -232,7 +232,7 @@
 	/**
 	* Deprecated. See DBCollection.update()
 	*/
-	function update( doc, collectionName, query, upsert=false, multi=false, applySet=true ){
+	function update( doc, collectionName, query, upsert=false, multi=false, overwriteExisting=false ){
 		return getDBCollection( collectionName ).update( argumentCollection=arguments );
 	}
 
