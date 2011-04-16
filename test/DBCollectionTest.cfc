@@ -38,6 +38,15 @@ import cfmongodb.core.*;
 		assertEquals("com.mongodb.DBApiLayer.mycollection",jColl.getClass().getCanonicalName());
 	}
 
+	function getMongoDBCollection_should_be_acceptably_fast(){
+		var collectionTS = getTickCount();
+		for( x = 1; x LTE 1000; x++ ){
+			dbCol.getMongoDBCollection();
+		}
+		collectionTotal = getTickCount() - collectionTS;
+		assertTrue( collectionTotal LT 20, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
+	}
+
 	/* !!!! Here begins CRUD Tests !!!!!*/
 
 	/* !!!!  SAVE !!!! */

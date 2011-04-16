@@ -5,13 +5,19 @@
 <cfscript>
 	variables.collectionName = "";
 	variables.mongo = "";
+
+	//these are the underlying java objects
+	variables.mongoDB = "";
 	variables.collection = "";
 
 	function init( collectionName, mongo ){
 		structAppend( variables, arguments );
-		variables.collection = getMongoDBCollection( collectionName );
 		variables.mongoUtil = mongo.getMongoUtil();
 		variables.mongoConfig = mongo.getMongoConfig();
+
+		variables.mongoDB = getMongoDB();
+		variables.collection = mongoDB.getCollection( collectionName );
+
 		return this;
 	}
 
@@ -26,7 +32,7 @@
 	/**
 	* Get the underlying Java driver's DB object
 	*/
-	function getMongoDB(){
+	private function getMongoDB(){
 		return variables.mongo.getMongo().getDb( variables.mongo.getMongoConfig().getDBName() );
 	}
 
@@ -34,8 +40,7 @@
 	* Get the underlying Java driver's DBCollection object for the given collection
 	*/
 	function getMongoDBCollection(){
-		var jMongoDB = getMongoDB();
-		return jMongoDB.getCollection( collectionName );
+		return variables.collection;
 	}
 
 	/**
@@ -83,7 +88,6 @@
 	  See gettingstarted.cfm for many examples
 	*/
 	function query(){
-	   //return new SearchBuilder( collectionName, getMongoDB(mongoConfig) , mongoUtil );
 	   return new SearchBuilder( this );
 	}
 
@@ -171,7 +175,7 @@
 			structDelete(dbCommand.group,"key");
 			dbCommand.group["$keyf"] = trim(keyf);
 		}
-		var result = getMongoDB().command( toMongo(dbCommand) );
+		var result = mongoDB.command( toMongo(dbCommand) );
 		return result["retval"];
 	}
 
@@ -220,7 +224,7 @@
 			] );
 
 		dbCommand.putAll(optionDefaults);
-		var commandResult = getMongoDB().command( dbCommand );
+		var commandResult = mongoDB.command( dbCommand );
 
 		var searchResult = this.query( commandResult["result"] ).find();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);

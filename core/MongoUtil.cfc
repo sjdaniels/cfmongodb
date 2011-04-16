@@ -15,6 +15,7 @@
 		}
 		variables.mongoFactory = arguments.mongoFactory;
 		variables.dboFactory = mongoFactory.getObject('com.mongodb.CFBasicDBObject');
+		variables.dboBuilderFactory = mongoFactory.getObject('com.mongodb.CFBasicDBObjectBuilder');
 		variables.typerClass = getTyperClass();
 		variables.typer = mongoFactory.getObject(typerClass).getInstance();
 	}
@@ -32,6 +33,13 @@
 	*/
 	function newDBObject(){
 		return dboFactory.newInstance(variables.typer);
+	}
+
+	/**
+	* Create a new instance of a CFBasicDBObjectBuilder
+	*/
+	function newDBObjectBuilder(){
+		return dboBuilderFactory.newInstance();
 	}
 
 	/**

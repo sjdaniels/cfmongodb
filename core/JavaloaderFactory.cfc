@@ -1,4 +1,4 @@
-<cfcomponent accessors="true" output="false">
+<cfcomponent accessors="true" output="false" extends="AbstractFactory">
 
 	<cfproperty name="javaloader">
 
@@ -12,7 +12,7 @@
 			<cfset variables.javaloader = arguments.javaloader>
 		</cfif>
 
-		<cfreturn this>
+		<cfreturn super.init()>
     </cffunction>
 
 	<cffunction name="getObject" output="false" access="public" returntype="any">

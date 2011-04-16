@@ -31,16 +31,13 @@ builder = '';
 pattern = '';
 dbCollection = '';
 collection = '';
-mongoFactory = '';
 mongoUtil = '';
 
 function init( DBCollection ){
- variables.dbCollection = arguments.DBCollection;
- variables.mongoUtil = DBCollection.getMongoUtil();
- variables.mongoFactory = mongoUtil.getMongoFactory();
- builder = mongoFactory.getObject('com.mongodb.CFBasicDBObjectBuilder');
- pattern = createObject('java', 'java.util.regex.Pattern');
- collection = DBCollection.getMongoDBCollection();
+	variables.dbCollection = arguments.DBCollection;
+	variables.mongoUtil = DBCollection.getMongoUtil();
+	builder = mongoUtil.newDBObjectBuilder();
+	pattern = createObject('java', 'java.util.regex.Pattern');
 }
 
 function builder(){
