@@ -120,13 +120,11 @@
 	}
 
 	/**
-	* So important we need to provide top level access to it and make it as easy to use as possible.
+	* FindAndModify is critical for queue-like operations. Its atomicity removes the traditional need to synchronize higher-level methods to ensure queue elements only get processed once.
 
-	FindAndModify is critical for queue-like operations. Its atomicity removes the traditional need to synchronize higher-level methods to ensure queue elements only get processed once.
+	  http://www.mongodb.org/display/DOCS/findandmodify+Command
 
-	http://www.mongodb.org/display/DOCS/findandmodify+Command
-
-	This function assumes you are using this to *apply* additional changes to the "found" document. If you wish to overwrite, pass overwriteExisting=true. One bristles at the thought
+	  This function assumes you are using this to *apply* additional changes to the "found" document. If you wish to overwrite, pass overwriteExisting=true. One bristles at the thought
 
 	*/
 	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean overwriteExisting=false ){
@@ -169,7 +167,7 @@
 
 	  usage, including optional 'query':
 
-	  result = collection.group( "tasks", "STATUS,OWNER", {TOTAL=0}, "function(obj,agg){ agg.TOTAL++; }, {SOMENUM = {"$gt" = 5}}" );
+	  result = collection.group( "STATUS,OWNER", {TOTAL=0}, "function(obj,agg){ agg.TOTAL++; }, {SOMENUM = {"$gt" = 5}}" );
 
 	  See examples/aggregation/group.cfm for detail
 	*/
@@ -204,7 +202,7 @@
 
 	  basic usage:
 
-	  result = collection.mapReduce( collectionName="tasks", map=map, reduce=reduce );
+	  result = collection.mapReduce( map=map, reduce=reduce, outputTarget="YourResultsCollection" );
 
 
 	  See examples/aggregation/mapReduce for detail
@@ -254,7 +252,7 @@
 	*  Saves a struct into the collection; Returns the newly-saved Document's _id; populates the struct with that _id
 
 		person = {name="bill", badmofo=true};
-		collection.save( person, "coolpeople" );
+		collection.save( person );
 	*/
 	function save( struct doc ){
 	   if( structKeyExists(doc, "_id") ){
@@ -271,7 +269,7 @@
 	* Saves an array of structs into the collection. Can also save an array of pre-created CFBasicDBObjects
 
 		people = [{name="bill", badmofo=true}, {name="marc", badmofo=true}];
-		collection.saveAll( people, "coolpeople" );
+		collection.saveAll( people );
 	*/
 	function saveAll( array docs ){
 		if( arrayIsEmpty(docs) ) return docs;
