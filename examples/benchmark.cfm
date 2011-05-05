@@ -42,7 +42,7 @@
 
 	saveTotal = getTickCount() - saveStart;
 
-	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='structs', USEJL=url.useJavaLoader, PRODUCT=serverName };
+	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='structs', USEJL=url.useJavaLoader, PRODUCT=serverName, TS=now() };
 	metricsCol.save( stat );
 
 
@@ -74,14 +74,39 @@
 
 	saveTotal = getTickCount() - saveStart;
 
-	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='dbos', USEJL=url.useJavaLoader, PRODUCT=serverName };
+	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='dbos', USEJL=url.useJavaLoader, PRODUCT=serverName, TS=now() };
 	metricsCol.save( stat );
 
 
 
+	reduce = "
+		function(obj, agg) {
+			agg.COUNT++;
+
+			if( obj.SAVETOTAL )
+				agg.SAVETOTAL += obj.SAVETOTAL;
+
+			if( obj.DATATOTAL )
+				agg.DATATOTAL += obj.DATATOTAL;
+		}
+	";
+
+	finalize = "
+		function(out){
+			//out.AVGPENDINGTIME = out.TOTALPENDINGTIME/out.TOTAL;
+		}
+	";
+
+	metricsResults = metricsCol.group(
+		keys="PRODUCT,SAVETYPE,USEJL",
+		initial={COUNT=0,SAVETOTAL=0,DATATOTAL=0},
+		reduce=reduce,
+		query={COUNT = 1000, PRODUCT = {"$exists" = true} },
+		finalize=finalize
+	);
 
 
-
+	writeDump(metricsResults);
 
 
 

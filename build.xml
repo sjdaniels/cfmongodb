@@ -112,7 +112,7 @@
 	</target>
 	
 	<target name="stopMongoService" depends="init">
-		<echo message="starting ${MongoDBService}"/>
+		<echo message="stopping ${MongoDBService}"/>
 		<exec executable="cmd.exe">
 			<arg line="/c"/>
 			<arg line="net"/>
