@@ -136,7 +136,7 @@ h2{
 	writeOutput("SearchResult.size() will respect the skip and limit arguments: #sizeWithLimit#<br>");
 
 	//using distinct() to return an array of unique values
-	kidAges = people.distinct( "KIDS.AGE", collection );
+	kidAges = people.distinct( "KIDS.AGE" );
 	writeOutput("<h2>Distinct values</h2>");
 	writeDump(var=kidAges, label="Distinct kid ages", expand="false");
 

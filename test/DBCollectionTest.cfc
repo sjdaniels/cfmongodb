@@ -272,11 +272,11 @@ import cfmongodb.core.*;
 		var collection = "distincts";
 		var dbDistinctCol = mongo.getDBCollection(collection);
 		var all = [
-			{val=1},
-			{val=1},
-			{val=2},
-			{val=1},
-			{val=100}
+			{val=1, i='a'},
+			{val=1, i='a'},
+			{val=2, i='a'},
+			{val=1, i='a'},
+			{val=100, i='b'}
 		];
 		dbDistinctCol.remove({});
 		var initial = dbDistinctCol.distinct("VAL");
@@ -287,6 +287,10 @@ import cfmongodb.core.*;
 		assertEquals(1, distincts[1]);
 		assertEquals(2, distincts[2]);
 		assertEquals(100, distincts[3]);
+		
+		var filteredDistincts = dbDistinctCol.distinct("VAL", {i='b'});
+		assertEquals( 1, arrayLen(filteredDistincts) );
+		assertEquals( 100, filteredDistincts[1] );
 	}
 
 
