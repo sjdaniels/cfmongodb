@@ -114,11 +114,16 @@
 	* Runs mongodb's distinct() command. Returns an array of distinct values
 	*
 	  distinctAges = collection.distinct( "KIDS.AGE" );
+	  
+	  use query to filter results
+	  collection.distinct( "KIDS.AGE", {GENDER="MALE"} )
 	*/
-	function distinct( string key ){
+	function distinct( string key, struct query ){
+		if(structKeyExists(arguments, "query")) {
+			return collection.distinct( key, toMongo(query) );
+		}
 		return collection.distinct( key );
 	}
-
 	/**
 	* FindAndModify is critical for queue-like operations. Its atomicity removes the traditional need to synchronize higher-level methods to ensure queue elements only get processed once.
 
