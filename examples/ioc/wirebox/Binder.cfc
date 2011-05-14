@@ -4,6 +4,7 @@ component extends="wirebox.system.ioc.config.Binder"{
 		
 		map("mongoFactory")
 			.to("cfmongodb.core.JavaloaderFactory");
+			//use cfmongodb.core.DefaultFactory to load mongodb jars in your CF classpath
 		
 		map("mongoConfig")
 			.to("cfmongodb.core.MongoConfig")
