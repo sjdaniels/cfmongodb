@@ -44,7 +44,7 @@ import cfmongodb.core.*;
 			dbCol.getMongoDBCollection();
 		}
 		collectionTotal = getTickCount() - collectionTS;
-		assertTrue( collectionTotal LT 20, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
+		assertTrue( collectionTotal LT 50, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
 	}
 
 	/* !!!! Here begins CRUD Tests !!!!!*/
@@ -287,7 +287,7 @@ import cfmongodb.core.*;
 		assertEquals(1, distincts[1]);
 		assertEquals(2, distincts[2]);
 		assertEquals(100, distincts[3]);
-		
+
 		var filteredDistincts = dbDistinctCol.distinct("VAL", {i='b'});
 		assertEquals( 1, arrayLen(filteredDistincts) );
 		assertEquals( 100, filteredDistincts[1] );

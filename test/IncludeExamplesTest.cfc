@@ -15,7 +15,7 @@
 		<cfset var currentURL = "">
 		<cfloop array="#paths#" index="path">
 			<cfset currentURL = variables.rootURL & path>
-			<cfhttp method="get" url="#currentURL#" result="httpResult">
+			<cfhttp method="get" url="#currentURL#?reload=true" result="httpResult">
 			<cfif httpResult.statusCode neq "200 OK">
 
 				<cfset debug(httpResult.fileContent)>

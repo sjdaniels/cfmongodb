@@ -37,6 +37,14 @@ import cfmongodb.core.*;
 		assertTrue( structCount(result["commands"]) GT 1);
 	}
 
+	function mongoOptions_should_be_available(){
+		var options = mongo.getMongo().getMongoOptions();
+		debug(options);
+		debug(options.toString());
+		options.socketTimeout=1000;
+		debug(options.toString());
+	}
+
 	function isAuthenticationRequired_should_return_true_if_index_queries_fail(){
 		//guard
 		var result = mongo.isAuthenticationRequired();
