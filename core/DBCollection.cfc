@@ -76,7 +76,7 @@
 	  result = collection.find( criteria={"AGE" = {"$gt"=18}}, limit="5", sort=sort );
 	  writeDump( var=result.asArray(), label="For query #result.getQuery().toString()# with sort #result.getSort().toString()#, returning #result.size()# of #result.totalCount()# documents" );
 	*/
-	function find( struct criteria, string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
+	function find( struct criteria="#structNew()#", string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
 		var key_exp = mongoUtil.listToStruct(arguments.keys);
 		var _keys = toMongo(key_exp);
 		var search_results = [];
@@ -114,7 +114,7 @@
 	* Runs mongodb's distinct() command. Returns an array of distinct values
 	*
 	  distinctAges = collection.distinct( "KIDS.AGE" );
-	  
+
 	  use query to filter results
 	  collection.distinct( "KIDS.AGE", {GENDER="MALE"} )
 	*/
