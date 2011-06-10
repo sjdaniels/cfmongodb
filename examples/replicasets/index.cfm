@@ -6,6 +6,7 @@ How I set up this test:
 
 > mongod --dbpath c:\data\replsetdbs\node1 --port 10001 --replSet testrepl/marc-pc:10002
 > mongod --dbpath c:\data\replsetdbs\node2 --port 10002 --replSet testrepl/marc-pc:10001
+> mongod --dbpath c:\data\replsetdbs\node3 --port 10003 --replSet testrepl/marc-pc:10001
 
 3) add those two replset members. To do this, I started up a mongo shell pointing at the first replset member, i.e. marc-pc:10001. Then, I ran this command:
 
@@ -21,6 +22,10 @@ db.runCommand(
 				{
 					"_id" : 2,
 					"host" : "marc-pc:10002"
+				},
+				{
+					"_id" : 3,
+					"host" : "marc-pc:10003"
 				}
 			]
 		}
@@ -49,6 +54,7 @@ Alternately, you can not use javaloaderFactory and use the default factory, whic
 <cfset hosts = [
 	{serverName = 'marc-pc', serverPort = 10001}
 	, {serverName = 'marc-pc', serverPort = 10002}
+	, {serverName = 'marc-pc', serverPort = 10003}
 ]>
 
 <cfset mongoConfig = createObject('component', 'cfmongodb.core.MongoConfig').init(

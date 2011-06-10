@@ -39,6 +39,9 @@ import cfmongodb.core.*;
 
 	function mongoOptions_should_be_available(){
 		var options = mongo.getMongo().getMongoOptions();
+		debug(mongo.getMongo());
+		debug(mongo.getMongo().toString());
+
 		debug(options);
 		debug(options.toString());
 		options.socketTimeout=1000;
