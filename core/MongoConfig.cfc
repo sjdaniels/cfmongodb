@@ -46,16 +46,7 @@
 	 	return this;
 	 }
 
-	 public function setAuthDetails(username, password) {
-	 	structAppend(variables.conf.auth, arguments);
-	 	return this;
-	 }
-
-	 public struct function getAuthDetails() {
-	 	return variables.conf.auth;
-	 }
-
-	  public function establishHostInfo(){
+     public function establishHostInfo(){
 		// environment decisions can often be made from this information
 		var inetAddress = createObject( "java", "java.net.InetAddress");
 		variables.hostAddress = inetAddress.getLocalHost().getHostAddress();

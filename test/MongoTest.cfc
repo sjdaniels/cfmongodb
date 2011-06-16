@@ -48,17 +48,6 @@ import cfmongodb.core.*;
 		debug(options.toString());
 	}
 
-	function isAuthenticationRequired_should_return_true_if_index_queries_fail(){
-		//guard
-		var result = mongo.isAuthenticationRequired();
-		assertFalse(result, "queries against an un-authed mongod should not cause errors");
-
-		//now spoof the authentication failure
-		injectMethod(mongo, this, "getIndexesFailOverride", "getIndexes");
-		result = mongo.isAuthenticationRequired();
-		assertTrue(result, "when a simple find query fails, we assume authentication is required");
-	}
-
 	private function getIndexesFailOverride(){
 		throw("authentication failed");
 	}

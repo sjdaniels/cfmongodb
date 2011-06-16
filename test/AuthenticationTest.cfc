@@ -41,26 +41,24 @@ then attempted to query against it
 	variables.testCollection = "authtests";
 	variables.javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
 	variables.mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName=variables.testDatabase, mongoFactory=javaloaderFactory);
-	variables.mongoConfig.setAuthDetails("username", "verysecurepassword!");
 
-	function init_should_error_when_authentication_fails() {
-		expectException("AuthenticationFailedException");
+	function authentication_should_error_when_authentication_fails() {
 
 		var mongo = createObject('component','cfmongodb.core.Mongo');
 		//we entirely spoof the authentication internals
-		injectMethod(mongo, this, "isAuthenticationRequiredOverride", "isAuthenticationRequired");
 		injectMethod(mongo, this, "authenticateOverride", "authenticate");
-
+		expectException("com.mongodb.CommandResult$CommandFailure");
 		mongo.init(mongoConfig);
+		var authResult = mongo.authenticate( "username", "verysecurepassword!" );
+		debug(authResult);
 	}
 
-	function init_should_succeed_when_authentication_passes() {
+	function authentication_should_not_error_when_authentication_passes() {
 		var mongo = createObject('component','cfmongodb.core.Mongo');
-		//we entirely spoof the authentication internals
-		injectMethod(mongo, this, "isAuthenticationRequiredOverride", "isAuthenticationRequired");
 		injectMethod(mongo, this, "authenticateSuccessOverride", "authenticate");
 
 		mongo.init(mongoConfig);
+		mongo.authenticate( "username", "verysecurepassword!" );
 	}
 
 	function tearDown(){
@@ -78,9 +76,10 @@ then attempted to query against it
 
 	}
 
-	private function isAuthenticationRequiredOverride(){ return true; }
-	private function authenticateOverride(){ return {authenticated=false, error={}}; }
-	private function authenticateSuccessOverride(){ return {authenticated=true, error={}}; }
+	private function authenticateOverride(){
+		throw(message='command failed [command failed [authenticate] { "errmsg" : "auth fails" , "ok" : 0.0}', type="com.mongodb.CommandResult$CommandFailure");
+	}
+	private function authenticateSuccessOverride(){  }
 
 
 </cfscript>

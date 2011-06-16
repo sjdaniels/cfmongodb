@@ -38,18 +38,9 @@
 
 		variables.mongoUtil = new MongoUtil(mongoFactory);
 
-		// Check for authentication, and if we have details set call it once on this database instance
-		if ( isAuthenticationRequired() ) {
-			var authResult = authenticate(mongoConfig.getAuthDetails().username, mongoConfig.getAuthDetails().password);
-			if(not authResult.authenticated and structIsEmpty(authResult.error) ) {
-				throw( message="Error authenticating against MongoDB Database", type="AuthenticationFailedException" );
-			} else if( not authResult.authenticated ) {
-				throw(object=authResult.error);
-			}
-		}
-
 		return this;
 	}
+
 
 	private function initCollections(){
 		var dbName = getMongoConfig().getDBName();
@@ -61,35 +52,17 @@
 
 		Typical usage:
 		mongoConfig.init(...);
-		mongoConfig.setAuthDetails( username, password );
-		mongo = new Mongo(mongoConfig);
+		mongo = new Mongo( mongoConfig );
+		mongo.authenticate( username, password );
 
-		If you set credentials to mongoConfig, Mongo.cfc will use those credentials to authenticate upon initialization.
 		If authentication fails, an error will be thrown
 	*
 	*/
-	struct function authenticate( string username, string password ){
+	void function authenticate( string username, string password ){
 		var result = {authenticated = false, error={}};
-		try{
-			result.authenticated = getMongoDB( variables.mongoConfig ).authenticate( arguments.username, arguments.password.toCharArray() );
-		}
-		catch( any e ){
-			result.error = e;
-		}
-		return result;
+		result.authenticated = getMongoDB( variables.mongoConfig ).authenticateCommand( arguments.username, arguments.password.toCharArray() );
 	}
 
-	/**
-	* Attempts to determine whether mongod is running in auth mode
-	*/
-	boolean function isAuthenticationRequired(){
-		try{
-			getIndexes("foo");
-			return false;
-		}catch(any e){
-			return true;
-		}
-	}
 
 	/**
 	*  Adds a user to the database
