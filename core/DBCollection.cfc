@@ -26,6 +26,9 @@
 	}
 
 	private function toCF( dbObject ){
+		if( isNull( dbObject ) ){
+			return javacast("null","");
+		}
 		return mongoUtil.toCF( dbObject );
 	}
 
@@ -50,9 +53,8 @@
 
 	  byID = collection.findById( url.personId );
 	*/
-	struct function findById( id ){
-		var result = collection.findOne( mongoUtil.newIDCriteriaObject( id ) );
-		return toCF( result );
+	function findById( id ){
+		return toCF( collection.findOne( mongoUtil.newIDCriteriaObject( id ) ) );
 	}
 
 	/**
@@ -77,8 +79,7 @@
 	  writeDump( var=result.asArray(), label="For query #result.getQuery().toString()# with sort #result.getSort().toString()#, returning #result.size()# of #result.totalCount()# documents" );
 	*/
 	function find( struct criteria="#structNew()#", string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
-		var key_exp = mongoUtil.listToStruct(arguments.keys);
-		var _keys = toMongo(key_exp);
+		var _keys = mongoUtil.createOrderedDBObject(arguments.keys);
 		var search_results = [];
 		if( isSimpleValue(sort) ) {
 			sort = mongoUtil.createOrderedDBObject( sort );
@@ -90,7 +91,7 @@
 		return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
 	}
 
-	function count( struct criteria ){
+	function count( struct criteria="#structNew()#" ){
 		return collection.count( toMongo(criteria) );
 	}
 
@@ -252,6 +253,16 @@
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;
 	}
+	
+	/**
+	* Inserts a struct into the collection
+	*/
+	function insert( struct doc ){
+		var dbObject =  toMongo(doc);
+		collection.insert( [dbObject] );
+		doc["_id"] =  dbObject.get("_id");
+		return doc["_id"];
+	}
 
 	/**
 	*  Saves a struct into the collection; Returns the newly-saved Document's _id; populates the struct with that _id
@@ -262,12 +273,10 @@
 	function save( struct doc ){
 	   if( structKeyExists(doc, "_id") ){
 	       update( doc = doc );
+		   return doc["_id"];
 	   } else {
-		   var dbObject =  toMongo(doc);
-		   collection.insert( [dbObject] );
-		   doc["_id"] =  dbObject.get("_id");
+	   	   return this.insert( doc );
 	   }
-	   return doc["_id"];
 	}
 
 	/**
