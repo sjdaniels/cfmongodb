@@ -1,4 +1,4 @@
-<cfcomponent accessors="true" output="false" extends="AbstractFactory">
+<cfcomponent accessors="true" output="false" extends="AbstractFactory" hint="Uses javaloader to create Java objects.">
 
 	<cfproperty name="javaloader">
 
@@ -15,7 +15,7 @@
 		<cfreturn super.init()>
     </cffunction>
 
-	<cffunction name="getObject" output="false" access="public" returntype="any">
+	<cffunction name="getObject" output="false" access="public" returntype="any" hint="Creates a Java object">
     	<cfargument name="path" type="string" required="true"/>
 		<cfreturn javaloader.create(path)>
     </cffunction>

@@ -1,4 +1,4 @@
-<cfcomponent output="false">
+<cfcomponent output="false" colddoc:abstract="true">
 
 	<cffunction name="init" output="false" access="public" returntype="any" hint="">
 		<cfreturn this>

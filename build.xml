@@ -100,6 +100,14 @@
 		<delete file="lib/cfmongodb.jar" />
 		<jar destfile="lib/cfmongodb.jar" basedir="java/bin" />
 	</target>
+	
+	<target name="buildAPIDocs" depends="init">
+		<delete dir="doc/api" />
+		<mkdir dir="doc" />
+		<loadresource property="apidocgen" failonerror="true">
+			<url url="http://${test.server}:${test.serverport}/cfmongodb/doc/build.cfm" />
+		</loadresource>
+	</target>
 
 	<target name="startMongoService" depends="init">
 		<echo message="starting ${MongoDBService}"/>

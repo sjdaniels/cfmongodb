@@ -10,6 +10,9 @@
 	variables.mongoDB = "";
 	variables.collection = "";
 
+	/**
+	* Not intended to be invoked directly. Always fetch DBCollection objects via mongo.getDBCollection( collectionName ) 
+	*/
 	function init( collectionName, mongo ){
 		structAppend( variables, arguments );
 		variables.mongoUtil = mongo.getMongoUtil();
