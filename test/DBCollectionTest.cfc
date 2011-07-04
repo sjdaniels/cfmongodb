@@ -195,20 +195,20 @@ import cfmongodb.core.*;
 		var doc = one.asArray()[1];
 		assertEquals( 3, doc.counter );
 	}
-	
+
 	function find_should_honor_including_fields(){
 		var people = createPeople(5, true);
 		//guard
 		var all = dbCol.find( limit=5 ).asArray();
 		assertTrue( structKeyExists(all[1], "age") );
-		
+
 		//test for 'inclusive' keys
 		var some = dbCol.find( limit=5, keys="counter,name" ).asArray();
 		assertFalse( structKeyExists(some[1], "age") );
 		assertTrue( structKeyExists(some[1], "counter") );
 		assertTrue( structKeyExists(some[1], "name") );
 	}
-	
+
 	function find_should_honor_excluding_fields(){
 		var people = createPeople(5, true);
 

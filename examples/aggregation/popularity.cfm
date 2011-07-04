@@ -82,7 +82,7 @@
 		}
 	";
 
-	//th 'inputcount' and 'processed' variables will be  global variables we set via the "scope" option
+	//the 'inputcount' and 'processed' variables will be  global variables we set via the "scope" option
 	finalize = "
 		function( key, value ){
 			value.rank = value.count / inputcount;

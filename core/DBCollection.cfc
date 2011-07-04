@@ -252,7 +252,7 @@
 		dbCommand.putAll(optionDefaults);
 		var commandResult = mongoDB.command( dbCommand );
 
-		var mrCollection = new DBCollection( commandResult["result"], mongo );
+		var mrCollection = mongo.getDBCollection( commandResult["result"] );
 		var searchResult = mrCollection.query().find();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;
