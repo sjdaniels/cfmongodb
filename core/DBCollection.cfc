@@ -11,7 +11,7 @@
 	variables.collection = "";
 
 	/**
-	* Not intended to be invoked directly. Always fetch DBCollection objects via mongo.getDBCollection( collectionName ) 
+	* Not intended to be invoked directly. Always fetch DBCollection objects via mongo.getDBCollection( collectionName )
 	*/
 	function init( collectionName, mongo ){
 		structAppend( variables, arguments );
@@ -252,11 +252,12 @@
 		dbCommand.putAll(optionDefaults);
 		var commandResult = mongoDB.command( dbCommand );
 
-		var searchResult = this.query( commandResult["result"] ).find();
+		var mrCollection = new DBCollection( commandResult["result"], mongo );
+		var searchResult = mrCollection.query().find();
 		var mapReduceResult = createObject("component", "MapReduceResult").init(dbCommand, commandResult, searchResult, mongoUtil);
 		return mapReduceResult;
 	}
-	
+
 	/**
 	* Inserts a struct into the collection
 	*/
