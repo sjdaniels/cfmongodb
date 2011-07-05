@@ -82,18 +82,16 @@
 		}
 	";
 
-	//the 'inputcount' and 'processed' variables will be  global variables we set via the "scope" option
+	//finalize will run one time, at the end of the mapreduce cycle, for each 'key'
 	finalize = "
 		function( key, value ){
-			value.rank = value.count / inputcount;
-			value.processed = processed;
+			value.rank = value.count / #numArticles#;
+			value.processed = new Date();
 			return value;
 		}
 	";
 
-	//pass in a scope... these become global variables inside MR
-	globals = {"inputcount" = numArticles, "processed" = now()};
-	result = articles.mapReduce( map=map, reduce=reduce, outputTarget="article_topic_rank", options={"scope"=globals, "finalize"=finalize} );
+	result = articles.mapReduce( map=map, reduce=reduce, outputTarget="article_topic_rank", options={"finalize"=finalize} );
 
 	writeDump(var=result, label="MapReduceResult object" expand="false");
 	writeDump(var=result.asArray(), label="mapReduceResult as array... this is the entire article_topic_rank collection", expand="false");
