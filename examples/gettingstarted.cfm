@@ -22,9 +22,7 @@ h2{
 		//create a default MongoConfig instance; in your real apps, you'll create an object that extends MongoConfig and put your environment specific config in there
 		//here we initialize it with a db named 'mongorocks'
 		mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="mongorocks", mongoFactory=javaloaderFactory);
-	}
-	else
-	{
+	}else{
 		mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="mongorocks");
 	}
 
@@ -147,7 +145,7 @@ h2{
 	// 2) updating one or more documents based on criteria. You almost always need to use a $set in this situation!!!
 
 	//updating a single pre-fetched document
-	person = people.query().find(limit="1").asArray()[1];
+	person = people.findOne();
 	person.FAVORITECIGAR = "H. Upmann Cubano";
 	person.MODTS = now();
 	arrayAppend( person.KIDS, {NAME = "Pauly", AGE = 0} );
@@ -191,7 +189,7 @@ h2{
 
 	people.update( doc = update, query = query, multi=true );
 
-	oldsters = people.query().$eq("NAME","Oldster").find().asArray();
+	oldsters = people.query().$eq("NAME", "Oldster").find().asArray();
 
 	writeOutput("<h2>Updating multiple documents</h2>");
 	writeDump( var=oldsters, label="Even EmoHipsters get old some day", expand="false");
@@ -266,7 +264,7 @@ h2{
 
 	//show how you get timestamp creation on all documents, for free, when using the default ObjectID
 	mongoUtil = mongo.getMongoUtil();
-	all = people.query().find().asArray();
+	all = people.find().asArray();
 	first = all[1];
 	last = all[ arrayLen(all) ];
 	writeOutput("<h2>Timestamps from Doc</h2>");

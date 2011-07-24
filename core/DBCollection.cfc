@@ -67,7 +67,7 @@
 
 	  doc = collection.findOne( {"age" = 18} );
 	*/
-	struct function findOne( struct criteria ){
+	struct function findOne( struct criteria="#structNew()#" ){
 		var result = collection.findOne( toMongo( criteria ) );
 		return toCF( result );
 	}
