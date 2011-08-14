@@ -7,7 +7,7 @@
 
 		<cfif isSimpleValue(arguments.javaloader)>
 			<cfset var jarPaths = directoryList( expandPath("/cfmongodb/lib"), false, "path", "*.jar" )>
-			<cfset variables.javaloader = createObject('component','cfmongodb.lib.javaloader.javaloader').init(jarPaths)>
+			<cfset variables.javaloader = createObject('component','cfmongodb.lib.javaloader.JavaLoader').init(jarPaths)>
 		<cfelse>
 			<cfset variables.javaloader = arguments.javaloader>
 		</cfif>

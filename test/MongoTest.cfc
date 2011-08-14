@@ -29,12 +29,20 @@ import cfmongodb.core.*;
 		commonTearDown();
 	}
 
-	function testListCommandsViaMongoDriver(){
+	function mongo_can_list_commands_via_mongo_driver(){
 		var result = mongo.getMongoDB().command("listCommands");
 		//debug(result);
 		assertTrue( structKeyExists(result, "commands") );
 		//NOTE: this is not a true CF struct, but a regular java hashmap; consequently, it is case sensitive!
 		assertTrue( structCount(result["commands"]) GT 1);
+	}
+	
+	function mongo_can_list_collections(){
+		var jMongoDB = mongo.getMongoDB();
+		var collections = jMongoDB.getCollectionNames();
+		debug(collections);
+		debug(collections.toString());
+		assertTrue( collections.size() GT 0 );
 	}
 
 	function mongoOptions_should_be_available(){
@@ -184,7 +192,7 @@ import cfmongodb.core.*;
 		debug( mongoDBO.toString() );
 		debug( dboDude.toString() );
 	}
-
+	
  </cfscript>
 
  <!--- include these here so they don't mess up the line numbering --->
