@@ -47,9 +47,9 @@ import cfmongodb.core.*;
 		assertTrue( collectionTotal LT 50, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
 	}
 
-	/* !!!! Here begins CRUD Tests !!!!!*/
+	/*    Here begins CRUD Tests   !*/
 
-	/* !!!!  SAVE !!!! */
+	/*     SAVE    */
 
 	function save_should_add_id_to_doc(){
 	  var id = dbCol.save( doc );
@@ -96,7 +96,7 @@ import cfmongodb.core.*;
 
 
 
-	/* !!!! UPDATE !!!! */
+	/*    UPDATE    */
 	function update_should_replace_found_with_updated_doc(){
 	  var originalCount = dbCol.query().$eq('name', 'bill' ).count();
 	  var doc = {
@@ -127,7 +127,23 @@ import cfmongodb.core.*;
 	}
 
 
-	/* !!!!  FIND  !!!! */
+
+	function inc_should_increment(){
+		var wesley = {"name" = "unittest", "lifeleft"=50, "torturemachine"=true};
+		dbCol.save( wesley );
+
+		var suckLifeOut = {"$inc" = {"lifeleft" = -1}};
+		var victim = { "name" = "unittest", "torturemachine" = true};
+		dbCol.update( doc = suckLifeOut, query = victim );
+
+		var rugenVictim = dbCol.query().$eq("torturemachine", true).find().asArray();
+		debug(rugenVictim);
+
+		assertEquals(wesley.lifeleft-1, rugenVictim[1].lifeleft);
+	}
+
+
+	/*     FIND     */
 
 	function search_should_honor_criteria(){
 	  var initial = dbCol.query().startsWith('name','unittest').find().asArray();
@@ -343,7 +359,7 @@ import cfmongodb.core.*;
 	}
 
 
-	/* !!!! DELETE !!!! */
+	/*    DELETE    */
 
 	function delete_should_delete_document_with_id(){
 	  dbDeleteCol.drop();
@@ -369,7 +385,7 @@ import cfmongodb.core.*;
 	  assertEquals( 0, results.size() );
 	}
 
-	/* !!!! INDEXES !!!! */
+	/*    INDEXES    */
 
 	function getIndexes_should_return_indexes_for_collection(){
 		var result = dbCol.dropIndexes();

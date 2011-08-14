@@ -341,7 +341,7 @@
 	   	  query = toMongo(query);
 		  var keys = structKeyList(doc);
 		  if( not overwriteExisting ){
-		  	doc = { "$set" = toMongo(doc)  };
+		  	//doc = { "$set" = toMongo(doc)  };
 		  }
 	   }
 	   var dbo = toMongo(doc);
