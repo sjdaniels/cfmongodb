@@ -126,9 +126,28 @@ import cfmongodb.core.*;
 	  assertEquals(originalCount+1, finalSize, "results should have been 1 but was #results.size()#" );
 	}
 
+	function update_should_set_and_not_overwrite_when_$set_is_used(){
+		var colName = "settest";
+		var col = mongo.getDBCollection( colName );
+		col.remove({});
 
+		col.save({"one"=1, "two"=2});
 
-	function inc_should_increment(){
+		col.update( doc={"$set" = {"three"=3}}, query={"one"=1} );
+
+		var all = col.find();
+		var asArray = all.asArray();
+		debug(asArray);
+		assertEquals( 1, all.size() );
+		var doc = asArray[1];
+
+		assertTrue( structKeyExists(doc, "one") );
+		assertTrue( structKeyExists(doc, "two") );
+		assertTrue( structKeyExists(doc, "three") );
+		assertEquals( 3, doc.three );
+	}
+
+	function update_should_increment_when_$inc_is_used(){
 		var wesley = {"name" = "unittest", "lifeleft"=50, "torturemachine"=true};
 		dbCol.save( wesley );
 
@@ -166,6 +185,8 @@ import cfmongodb.core.*;
 		var descResults = desc.asArray();
 		debug( desc.getQuery().toString() );
 		debug( desc.getSort().toString() );
+
+		debug(people);
 
 		assertEquals( ascResults[1].age, descResults[ desc.size() ].age  );
 	}
@@ -258,7 +279,7 @@ import cfmongodb.core.*;
 		//guard
 		assertEquals(count, arrayLen(people));
 		var query = {inprocess=false};
-		var update = {inprocess=true, started=now(),owner=cgi.SERVER_NAME};
+		var update = {"$set" = {inprocess=true, started=now(), owner=cgi.SERVER_NAME}};
 		var new = dbAtomicCol.findAndModify(query=query, update=update);
 		flush();
 

@@ -129,14 +129,14 @@
 		return collection.distinct( key );
 	}
 	/**
-	* FindAndModify is critical for queue-like operations. Its atomicity removes the traditional need to synchronize higher-level methods to ensure queue elements only get processed once.
+	* findAndModify is critical for queue-like operations. Its atomicity removes the traditional need to synchronize higher-level methods to ensure queue elements only get processed once.
 
 	  http://www.mongodb.org/display/DOCS/findandmodify+Command
 
-	  This function assumes you are using this to *apply* additional changes to the "found" document. If you wish to overwrite, pass overwriteExisting=true. One bristles at the thought
+	  Your "update" doc must apply one of MongoDB's update modifiers (http://www.mongodb.org/display/DOCS/Updating#Updating-update%28%29), otherwise the found document will be overwritten with the "update" argument, and that is probably not what you want.
 
 	*/
-	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false, boolean overwriteExisting=false ){
+	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false ){
 		// Confirm our complex defaults exist; need this chunk of muck because CFBuilder 1 breaks with complex datatypes in defaults
 		local.argumentDefaults = {sort={"_id"=1},fields={}};
 		for(local.k in local.argumentDefaults)
@@ -147,10 +147,6 @@
 			}
 		}
 
-		//must apply $set, otherwise old struct is overwritten
-		if( NOT overwriteExisting ){
-			update = { "$set" = toMongo(update)  };
-		}
 		if( not isStruct( sort ) ){
 			sort = mongoUtil.createOrderedDBObject(sort);
 		} else {
@@ -309,15 +305,22 @@
 	/**
 	* Updates a document in the collection.
 
+	NOTE: This function signature *differs* from the mongo shell signature in one important way:
+
+	mongo shell: update( query, doc, upsert, multi )
+	cfmongodb:   update( doc, query, upsert, multi )
+
+	The reason is that this enables more ColdFusion-idiomatic updating, in that we can pass in a single document argument without using named parameters. For example:
+
 	The "doc" argument will either be an existing Mongo document to be updated based on its _id, or it will be a document that will be "applied" to any documents that match the "query" argument
 
-	To update a single existing document, simply pass that document and update() will update the document by its _id:
+	To update a single existing document, simply pass that document and update() will update the document by its _id, overwriting the existing document with the doc argument:
 	 person = person.findById(url.id);
 	 person.something = "something else";
 	 collection.update( person );
 
 	To update a document by a criteria query and have the "doc" argument applied to a single found instance:
-	update = {STATUS = "running"};
+	update =  { "set" = {STATUS = "running"} };
 	query = {STATUS = "pending"};
 	collection.update( update, query );
 
@@ -326,9 +329,9 @@
 
 	Pass upsert=true to create a document if no documents are found that match the query criteria
 
-	Pass overwriteExisting=true to overwrite the found document(s) with the doc argument
 	*/
-	function update( doc, query, upsert=false, multi=false, overwriteExisting=false ){
+
+	function update( doc, query, upsert=false, multi=false ){
 
 		if ( !structKeyExists(arguments, 'query') ){
 			arguments.query = {};
@@ -340,9 +343,6 @@
 	   } else{
 	   	  query = toMongo(query);
 		  var keys = structKeyList(doc);
-		  if( not overwriteExisting ){
-		  	//doc = { "$set" = toMongo(doc)  };
-		  }
 	   }
 	   var dbo = toMongo(doc);
 	   collection.update( query, dbo, upsert, multi );
