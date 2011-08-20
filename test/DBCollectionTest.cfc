@@ -177,26 +177,30 @@ import cfmongodb.core.*;
 
 
 	function search_sort_should_be_applied(){
-		var people = createPeople(5, true);
-		var asc = dbCol.query().$eq("name","unittest").find();
-		var desc = dbCol.query().$eq("name","unittest").find(sort={"name"=-1});
+		var totalPeople = 5;
+		var people = createPeople(totalPeople, true);
+		var asc = dbCol.query().$eq("name", "unittest").find(sort={"counter"=1});
+		var desc = dbCol.query().$eq("name", "unittest").find(sort={"counter"=-1});
 
 		var ascResults = asc.asArray();
 		var descResults = desc.asArray();
 		debug( desc.getQuery().toString() );
 		debug( desc.getSort().toString() );
 
-		debug(people);
+		assertTrue( NOT find("1.0", asc.getSort().toString()), "1 and -1 should remain as integers in the sort object" );
+		assertTrue( NOT find("-1.0", desc.getSort().toString()), "1 and -1 should remain as integers in the sort object" );
 
-		assertEquals( ascResults[1].age, descResults[ desc.size() ].age  );
+		assertEquals( 1, ascResults[1].counter );
+		assertEquals( 5, ascResults[5].counter );
+		assertEquals( ascResults[1].age, descResults[ totalPeople ].age  );
 	}
 
 	function search_limit_should_be_applied(){
 		var people = createPeople(5, true);
 		var limit = 2;
 
-		var full = dbCol.query().$eq("name","unittest").find();
-		var limited = dbCol.query().$eq("name","unittest").find(limit=limit);
+		var full = dbCol.query().$eq("name", "unittest").find();
+		var limited = dbCol.query().$eq("name", "unittest").find(limit=limit);
 		assertEquals(limit, limited.size());
 		assertTrue( full.size() GT limited.size() );
 	}
@@ -204,8 +208,8 @@ import cfmongodb.core.*;
 	function search_skip_should_be_applied(){
 		var people = createPeople(5, true);
 		var skip = 1;
-		var full = dbCol.query().$eq("name","unittest").find();
-		var skipped = dbCol.query().$eq("name","unittest").find(skip=skip);
+		var full = dbCol.query().$eq("name", "unittest").find();
+		var skipped = dbCol.query().$eq("name", "unittest").find(skip=skip);
 
 		assertEquals(full.asArray()[2] , skipped.asArray()[1], "lemme splain, Lucy: since we're skipping 1, then the first element of skipped should be the second element of full" );
 	}
@@ -219,7 +223,7 @@ import cfmongodb.core.*;
 
 	function find_should_be_equivalent_to_search(){
 		var people = createPeople(5, true);
-		var fullViaQuery = dbCol.query(col).$eq("name","unittest").find();
+		var fullViaQuery = dbCol.query(col).$eq("name", "unittest").find();
 		var fullViaFind = dbCol.find( {"name"="unittest"} );
 		assertEquals( arrayLen(fullViaQuery.asArray()), arrayLen(fullViaFind.asArray()) );
 	}
@@ -271,7 +275,6 @@ import cfmongodb.core.*;
 		dbAtomicCol.ensureIndex(["INPROCESS"]);
 		dbAtomicCol.saveAll(people);
 
-		flush();
 
 		//get total inprocess count
 		var inprocess = dbAtomicCol.query().$eq("INPROCESS",false).find().size();
@@ -281,7 +284,6 @@ import cfmongodb.core.*;
 		var query = {inprocess=false};
 		var update = {"$set" = {inprocess=true, started=now(), owner=cgi.SERVER_NAME}};
 		var new = dbAtomicCol.findAndModify(query=query, update=update);
-		flush();
 
 		assertTrue( structKeyExists(new, "age") );
 		assertTrue( structKeyExists(new, "name") );
@@ -414,7 +416,7 @@ import cfmongodb.core.*;
 		assertEquals( 1, arrayLen(result), "always an index on _id" );
 
 		dbCol.ensureIndex(fields=["name"]);
-		dbCol.ensureIndex(fields=[{"name"=1},{"address.state"=-1}]);
+		dbCol.ensureIndex(fields=[{"name"=1}, {"address.state"=-1}]);
 		result = dbCol.getIndexes();
 
 		assertTrue( arrayLen(result) GT 1, "Should be at least 2: 1 for the _id, and one for the index we just added");
