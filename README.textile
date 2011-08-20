@@ -4,6 +4,16 @@ CFMongoDB is both partial wrapper for the MongoDB Java driver and a document-str
 
 CFMongoDB works with Adobe ColdFusion 9.0.1+ and Railo 3.2+
 
+h2. Notes
+
+As of August 20, 2011, collection.update() and collection.modify() introduced breaking changes! They no longer wrap documents in {$set} automatically.
+
+You will need to change your "update" documents like so:
+
+old: {newField="hey"}
+
+new: { "$set" = {newField="hey"} }
+
 h2. Some Code
 
 One of the most appealing aspects is that data can be created as a ColdFusion structure and persisted almost verbatim. Example:
