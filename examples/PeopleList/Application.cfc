@@ -13,7 +13,7 @@ component{
 
 	function onRequestStart(){
 		if( structKeyExists(url, "reload") ){
-			applicationStop();
+			onApplicationStart();
 		}
 	}
 

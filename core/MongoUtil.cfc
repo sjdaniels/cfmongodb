@@ -21,10 +21,13 @@
 	}
 
 	/**
-	* Returns a passthrough typer for Railo b/c it knows that 1 is 1 and not "1"; returns the CFStrictTyper otherwise
+	* returns the CFStrictTyper.
+
+		For Adobe ColdFusion, we need the CFStrictTyper because Adobe CF will treat numbers and booleans as strings.
+
+		For Railo, we need the CFStrictTyper because Railo will treat integers as floats (i.e. 1 as 1.0), and sometimes treat numbers as strings, i.e. 1 as "1"
 	*/
 	public function getTyperClass(){
-		if( server.coldfusion.productname eq "Railo") return "net.marcesher.NoTyper";
 		return "net.marcesher.CFStrictTyper";
 	}
 
