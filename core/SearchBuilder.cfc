@@ -98,53 +98,48 @@ function inArray(element, val){
 
 
  //vals should be list or array
-function $in(element,vals){
-  if(isArray(vals)) return addArrayCriteria(element,vals,'$in');
+function $in(element, vals){
+  if(isArray(vals)) return addArrayCriteria(element, vals,'$in');
   return addArrayCriteria(element, listToArray(vals),'$in');
 }
 
-function $nin(element,vals){
-  if(isArray(vals)) return addArrayCriteria(element,vals,'$nin');
+function $nin(element, vals){
+  if(isArray(vals)) return addArrayCriteria(element, vals,'$nin');
   return addArrayCriteria(element, listToArray(vals),'$nin');
 }
 
 
-function $eq(element,val){
-  builder.add( element,val );
+function $eq(element, val){
+  builder.add( element, val );
   return this;
 }
 
 
-function $ne(element,val){
-  //return addNumericCriteria(element,val,'$ne');
+function $ne(element, val){
    builder.add( element, { "$ne" = val } );
    return  this;
 }
 
 
-function $lt(element,val){
-  //return addNumericCriteria(element,val,'$lt');
+function $lt(element, val){
   builder.add( element, { "$lt" = val } );
   return  this;
 }
 
 
-function $lte(element,val){
-  //return addNumericCriteria(element,val,'$lte');
+function $lte(element, val){
   builder.add( element, { "$lte" = val } );
   return this;
 }
 
 
-function $gt(element,val){
-  //return addNumericCriteria(element,val,'$gt');
+function $gt(element, val){
   builder.add( element, { "$gt" = val } );
   return this;
 }
 
 
-function $gte(element,val){
-  //return addNumericCriteria(element,val,'$gte');
+function $gte(element, val){
   builder.add( element, { "$gte" = val } );
   return this;
 }
