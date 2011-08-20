@@ -47,9 +47,9 @@ import cfmongodb.core.*;
 		assertTrue( collectionTotal LT 50, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
 	}
 
-	/* !!!! Here begins CRUD Tests !!!!!*/
+	/*    Here begins CRUD Tests   !*/
 
-	/* !!!!  SAVE !!!! */
+	/*     SAVE    */
 
 	function save_should_add_id_to_doc(){
 	  var id = dbCol.save( doc );
@@ -96,7 +96,7 @@ import cfmongodb.core.*;
 
 
 
-	/* !!!! UPDATE !!!! */
+	/*    UPDATE    */
 	function update_should_replace_found_with_updated_doc(){
 	  var originalCount = dbCol.query().$eq('name', 'bill' ).count();
 	  var doc = {
@@ -126,8 +126,43 @@ import cfmongodb.core.*;
 	  assertEquals(originalCount+1, finalSize, "results should have been 1 but was #results.size()#" );
 	}
 
+	function update_should_set_and_not_overwrite_when_$set_is_used(){
+		var colName = "settest";
+		var col = mongo.getDBCollection( colName );
+		col.remove({});
 
-	/* !!!!  FIND  !!!! */
+		col.save({"one"=1, "two"=2});
+
+		col.update( doc={"$set" = {"three"=3}}, query={"one"=1} );
+
+		var all = col.find();
+		var asArray = all.asArray();
+		debug(asArray);
+		assertEquals( 1, all.size() );
+		var doc = asArray[1];
+
+		assertTrue( structKeyExists(doc, "one") );
+		assertTrue( structKeyExists(doc, "two") );
+		assertTrue( structKeyExists(doc, "three") );
+		assertEquals( 3, doc.three );
+	}
+
+	function update_should_increment_when_$inc_is_used(){
+		var wesley = {"name" = "unittest", "lifeleft"=50, "torturemachine"=true};
+		dbCol.save( wesley );
+
+		var suckLifeOut = {"$inc" = {"lifeleft" = -1}};
+		var victim = { "name" = "unittest", "torturemachine" = true};
+		dbCol.update( doc = suckLifeOut, query = victim );
+
+		var rugenVictim = dbCol.query().$eq("torturemachine", true).find().asArray();
+		debug(rugenVictim);
+
+		assertEquals(wesley.lifeleft-1, rugenVictim[1].lifeleft);
+	}
+
+
+	/*     FIND     */
 
 	function search_should_honor_criteria(){
 	  var initial = dbCol.query().startsWith('name','unittest').find().asArray();
@@ -150,6 +185,8 @@ import cfmongodb.core.*;
 		var descResults = desc.asArray();
 		debug( desc.getQuery().toString() );
 		debug( desc.getSort().toString() );
+
+		debug(people);
 
 		assertEquals( ascResults[1].age, descResults[ desc.size() ].age  );
 	}
@@ -242,7 +279,7 @@ import cfmongodb.core.*;
 		//guard
 		assertEquals(count, arrayLen(people));
 		var query = {inprocess=false};
-		var update = {inprocess=true, started=now(),owner=cgi.SERVER_NAME};
+		var update = {"$set" = {inprocess=true, started=now(), owner=cgi.SERVER_NAME}};
 		var new = dbAtomicCol.findAndModify(query=query, update=update);
 		flush();
 
@@ -343,7 +380,7 @@ import cfmongodb.core.*;
 	}
 
 
-	/* !!!! DELETE !!!! */
+	/*    DELETE    */
 
 	function delete_should_delete_document_with_id(){
 	  dbDeleteCol.drop();
@@ -369,7 +406,7 @@ import cfmongodb.core.*;
 	  assertEquals( 0, results.size() );
 	}
 
-	/* !!!! INDEXES !!!! */
+	/*    INDEXES    */
 
 	function getIndexes_should_return_indexes_for_collection(){
 		var result = dbCol.dropIndexes();

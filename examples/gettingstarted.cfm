@@ -158,7 +158,7 @@ h2{
 	person = {NAME = "Ima PHP dev", AGE=12};
 	people.save( person );
 
-	people.update( doc = {NAME = "Ima CF Dev", HAPPY = true}, query= {NAME = "Ima PHP dev"} );
+	people.update( doc = {"$set" = {NAME = "Ima CF Dev", HAPPY = true}}, query= {NAME = "Ima PHP dev"} );
 	afterUpdate = people.findById( person["_id"] );
 
 	writeOutput("<h2>Updated person by criteria</h2>");
@@ -169,10 +169,10 @@ h2{
 	person = {NAME = "Ima PHP dev", AGE=12};
 	people.save( person );
 
-	people.update( doc={NAME = "Ima CF Dev", HAPPY = true}, query= {NAME = "Ima PHP dev"}, overwriteExisting = true );
+	people.update( doc={NAME = "Ima CF Dev", HAPPY = true}, query= {NAME = "Ima PHP dev"} );
 	afterUpdate = people.findById( person["_id"] );
 
-	writeOutput("<h2>Updated person by criteria with overwriteExisting=true. Notice it OVERWROTE the entire document</h2>");
+	writeOutput("<h2>Updated person by criteria with overwrite. Notice it OVERWROTE the entire document because an update modifier ($set, $inc, etc) was not used</h2>");
 	writeDump(var = person, label="Original", expand=false);
 	writeDump(var = afterUpdate, label = "After update without using $set", expand=false);
 
@@ -184,7 +184,7 @@ h2{
 		{NAME = "EmoHipster", AGE=18}]
 	);
 
-	update = {NAME = "Oldster", AGE=76, REALIZED="tempus fugit"};
+	update = {"$set" = {NAME = "Oldster", AGE=76, REALIZED="tempus fugit"}};
 	query = {NAME = "EmoHipster"};
 
 	people.update( doc = update, query = query, multi=true );
@@ -245,7 +245,7 @@ h2{
 	tasksCol.saveAll( jobs );
 
 	query = {STATUS = 'P'};
-	update = {STATUS = 'R', started = now(), owner = cgi.server_name};
+	update = {"$set" = {STATUS = 'R', started = now(), owner = cgi.server_name}};
 
 	nowScheduled = tasksCol.findAndModify( query = query, update = update, sort = "N" );
 
