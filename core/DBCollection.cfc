@@ -83,12 +83,8 @@
 	*/
 	function find( struct criteria="#structNew()#", string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
 		var _keys = mongoUtil.createOrderedDBObject(arguments.keys);
+		sort = toMongo(sort);
 		var search_results = [];
-		if( isSimpleValue(sort) ) {
-			sort = mongoUtil.createOrderedDBObject( sort );
-		} else {
-			sort = toMongo(sort);
-		}
 		criteria = toMongo( criteria );
 		search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
 		return createObject("component", "SearchResult").init( search_results, sort, mongoUtil );
@@ -136,9 +132,9 @@
 	  Your "update" doc must apply one of MongoDB's update modifiers (http://www.mongodb.org/display/DOCS/Updating#Updating-update%28%29), otherwise the found document will be overwritten with the "update" argument, and that is probably not what you want.
 
 	*/
-	function findAndModify( struct query, struct fields, any sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false ){
+	function findAndModify( struct query, struct fields, struct sort, boolean remove=false, struct update, boolean returnNew=true, boolean upsert=false ){
 		// Confirm our complex defaults exist; need this chunk of muck because CFBuilder 1 breaks with complex datatypes in defaults
-		local.argumentDefaults = {sort={"_id"=1},fields={}};
+		local.argumentDefaults = {sort={"_id"=1}, fields={}};
 		for(local.k in local.argumentDefaults)
 		{
 			if (!structKeyExists(arguments, local.k))
@@ -146,12 +142,7 @@
 				arguments[local.k] = local.argumentDefaults[local.k];
 			}
 		}
-
-		if( not isStruct( sort ) ){
-			sort = mongoUtil.createOrderedDBObject(sort);
-		} else {
-			sort = toMongo( sort );
-		}
+		sort = toMongo( sort );
 
 		var updated = collection.findAndModify(
 			toMongo(query),

@@ -95,25 +95,25 @@ h2{
 	showResult( specialized, "Specialized riders" );
 
 	//find the 3rd and 4th Specialized bike riders, sorted by "ts" descending
-	specialized = people.query().$eq("BIKE", "Specialized").find( skip=2, limit=2, sort="TS=-1" );
+	specialized = people.query().$eq("BIKE", "Specialized").find( skip=2, limit=2, sort={"TS"=-1} );
 	showResult( specialized, "Specialized riders, skipping to 3, limiting to 2, sorting by ts desc (skip is 0-based!)" );
 
 	//find riders with counter between 1 and 3, sorted by "ts" descending
 	specialized = people.query()
 						.$eq("BIKE", "Specialized")
 						.between("COUNTER", 1, 3)
-						.find( sort="TS=-1" );
+						.find( sort={"TS"=-1} );
 	showResult( specialized, "Specialized riders, COUNTER between 1 and 3" );
 
 	//find riders with counter between 1 and 3 Exclusive, sorted by "ts" descending
 	specialized = people.query()
 						.$eq("BIKE", "Specialized")
 						.betweenExclusive("COUNTER", 1, 3)
-						.find( sort="TS=-1" );
+						.find( sort={"TS"=-1});
 	showResult( specialized, "Specialized riders, COUNTER between 1 and 3 Exclusive" );
 
 	//find people with kids aged between 2 and 30
-	kidSearch = people.query().between("KIDS.AGE", 2, 30).find(keys="NAME,COUNTER,KIDS", sort="COUNTER=-1");
+	kidSearch = people.query().between("KIDS.AGE", 2, 30).find(keys="NAME,COUNTER,KIDS", sort={"COUNTER"=-1});
 	showResult( kidSearch, "People with kids aged between 2 and 30" );
 
 
@@ -247,7 +247,7 @@ h2{
 	query = {STATUS = 'P'};
 	update = {"$set" = {STATUS = 'R', started = now(), owner = cgi.server_name}};
 
-	nowScheduled = tasksCol.findAndModify( query = query, update = update, sort = "N" );
+	nowScheduled = tasksCol.findAndModify( query = query, update = update, sort = {"N"=1} );
 
 	writeOutput("<h2>findAndModify()</h2>");
 	writeDump(var=nowScheduled, label="findAndModify", expand="false");

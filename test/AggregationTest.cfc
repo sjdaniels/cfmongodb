@@ -100,7 +100,7 @@ import cfmongodb.core.*;
 		//debug(result.asArray());
 		assertEquals( 4, arrayLen(result.asArray()), "should have had 4 elements because there were 4 different tags" );
 
-		var sorted = mongo.getDBCollection("article_topic_rank").find(sort="value.count=-1");
+		var sorted = mongo.getDBCollection("article_topic_rank").find(sort={"value.count"=-1});
 		var sortedResult = sorted.asArray();
 		debug(sortedResult);
 		assertEquals(10, sortedResult[1]["value"]["count"] );

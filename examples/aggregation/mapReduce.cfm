@@ -46,7 +46,7 @@
 
 	//#1.5: perform additional queries against the MapReduce collection
 	mrCol = mongo.getDBCollection( mapReduceOutputCollectionName );
-	filteredResult = mrCol.query().$gt("value",10).find(limit=2,sort="value=-1");
+	filteredResult = mrCol.query().$gt("value",10).find(limit=2, sort={"value"=-1});
 	result.setSearchResult( filteredResult );
 
 	writeOutput("<h1>Perform additional searches on the CFMongoDB MapReduce result</h1>");
