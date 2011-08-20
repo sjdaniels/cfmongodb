@@ -6,13 +6,25 @@ CFMongoDB works with Adobe ColdFusion 9.0.1+ and Railo 3.2+
 
 h2. Notes
 
-As of August 20, 2011, collection.update() and collection.modify() introduced breaking changes! They no longer wrap documents in {$set} automatically.
+As of August 20, 2011, collection.update(), collection.findAndModify(), and "sort" all introduced breaking changes! 
+
+h3. update() and findAndModify()
+
+They no longer wrap documents in {$set} automatically.
 
 You will need to change your "update" documents like so:
 
 old: {newField="hey"}
 
 new: { "$set" = {newField="hey"} }
+
+h3. sort
+
+Sort must now be a structure... string support is no longer supported.
+
+old:  find(sort="TS=-1")
+
+new: find(sort={"TS"=-1})
 
 h2. Some Code
 
