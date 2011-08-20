@@ -248,7 +248,7 @@
 		var commandResult = mongoDB.command( dbCommand );
 
 		if( NOT commandResult['ok'] ){
-			throw("Error Message: #commandResult['errmsg']#: Assertion: #commandResult['assertion']#.", "MapReduceException", '', '', serializeJson(commandResult));
+			throw("Error Message: #commandResult['errmsg']#:", "MapReduceException", '', '', serializeJson(commandResult));
 		}
 
 		var mrCollection = mongo.getDBCollection( commandResult["result"] );
