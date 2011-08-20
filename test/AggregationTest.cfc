@@ -63,6 +63,22 @@ import cfmongodb.core.*;
 
 	}
 
+	/**
+	* @mxunit:expectedException GroupException
+	*/
+	function group_should_rethrow_mongo_error_when_present(){
+		var reduce = "
+			function( obj, agg ){
+		";
+
+		var groups = dbCol.group(
+			keys="STATUS",
+			initial={TOTAL=0},
+			reduce=reduce
+		);
+
+	}
+
 	function mapReduce_should_aggregate(){
 		var articles = createArticles();
 		dbCol.saveAll(articles);
@@ -109,10 +125,34 @@ import cfmongodb.core.*;
 		assertEquals(0.2, sortedResult[4]["value"]["rank"] );
 	}
 
-	private function flush(){
-		//forces mongo to flush
-		mongo.getMongoDB().getLastError();
+	/**
+	* @mxunit:expectedException MapReduceException
+	*/
+	function mapReduce_should_rethrow_mongo_error_when_present(){
+		var map = "
+			function(){
+				this.HIMOM.forEach(
+					function(z){
+						emit( z, {count: 1} );
+
+				);
+			}
+		";
+		var reduce = "
+			function(key, emits){
+				var total = 0;
+
+				for( var i in emits ){
+					total += emits[i].count;
+				}
+				return {count: total};
+			}
+		";
+
+		var result = dbCol.mapReduce( map=map, reduce=reduce, outputTarget="map_reduce_error" );
+		debug(result);
 	}
+
 
 	/**
 	* creates a dataset to work with both group and mapReduce

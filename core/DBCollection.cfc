@@ -193,6 +193,10 @@
 			dbCommand.group["$keyf"] = trim(keyf);
 		}
 		var result = mongoDB.command( toMongo(dbCommand) );
+
+		if( NOT result['ok']){
+			throw("Error message: #result['errmsg']#", "GroupException", '', '', serializeJson(result));
+		}
 		return result["retval"];
 	}
 
@@ -242,6 +246,10 @@
 
 		dbCommand.putAll(optionDefaults);
 		var commandResult = mongoDB.command( dbCommand );
+
+		if( NOT commandResult['ok'] ){
+			throw("Error Message: #commandResult['errmsg']#: Assertion: #commandResult['assertion']#.", "MapReduceException", '', '', serializeJson(commandResult));
+		}
 
 		var mrCollection = mongo.getDBCollection( commandResult["result"] );
 		var searchResult = mrCollection.query().find();
