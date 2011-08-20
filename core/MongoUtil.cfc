@@ -16,19 +16,30 @@
 		variables.mongoFactory = arguments.mongoFactory;
 		variables.dboFactory = mongoFactory.getObject('com.mongodb.CFBasicDBObject');
 		variables.dboBuilderFactory = mongoFactory.getObject('com.mongodb.CFBasicDBObjectBuilder');
-		variables.typerClass = getTyperClass();
+		variables.typerClass = getDocumentTyperClass();
+		variables.operationTyperClass = getOperationTyperClass();
 		variables.typer = mongoFactory.getObject(typerClass).getInstance();
+		variables.operationTyper = mongoFactory.getObject(operationTyperClass).getInstance();
 	}
 
 	/**
-	* returns the CFStrictTyper.
+	* returns the typer class name to use for Document and Query objects.
 
 		For Adobe ColdFusion, we need the CFStrictTyper because Adobe CF will treat numbers and booleans as strings.
 
-		For Railo, we need the CFStrictTyper because Railo will treat integers as floats (i.e. 1 as 1.0), and sometimes treat numbers as strings, i.e. 1 as "1"
+		For Railo, we can use the "NoTyper" because Railo treats numbers as numbers and booleans as booleans
 	*/
-	public function getTyperClass(){
+	public function getDocumentTyperClass(){
+		if( server.coldfusion.productname eq "Railo") return "net.marcesher.NoTyper";
 		return "net.marcesher.CFStrictTyper";
+	}
+
+	/**
+	* returns a simple typer class that only concerns itself with 1, -1, and 0, which MongoDB uses
+	  for operation decision making such as sorting and field selection
+	*/
+	public function getOperationTyperClass(){
+		return "net.marcesher.MongoDBOperationOnlyTyper";
 	}
 
 	/**
@@ -36,6 +47,13 @@
 	*/
 	function newDBObject(){
 		return dboFactory.newInstance(variables.typer);
+	}
+
+	/**
+	* Create a new instance of the CFBasicDBObject for use in operational (i.e. non-document-save) situations
+	*/
+	function newOperationalDBObject(){
+		return dboFactory.newInstance(variables.operationTyper);
 	}
 
 	/**
@@ -52,6 +70,16 @@
 		//for now, assume it's a struct to DBO conversion
 		if( isCFBasicDBObject(data) ) return data;
 		var dbo = newDBObject();
+		dbo.putAll( data );
+		return dbo;
+	}
+
+	/**
+	* Converts a ColdFusion structure to a CFBasicDBobject which ensures 1 and -1 remain ints
+	*/
+	function toMongoOperation( struct data ){
+		if( isCFBasicDBObject(data) ) return data;
+		var dbo = newOperationalDBObject();
 		dbo.putAll( data );
 		return dbo;
 	}
@@ -89,8 +117,10 @@
 		4) an array of structs (often necessary when creating "command" objects for passing to db.command()):
 		  createOrderedDBObject( [ {"mapreduce"="tasks"}, {"map"=map}, {"reduce"=reduce} ] )
 	*/
-	function createOrderedDBObject( keyValues ){
-		var dbo = newDBObject();
+	function createOrderedDBObject( keyValues, dbObject="" ){
+		if( isSimpleValue(dbObject) ){
+			dbObject = newDBObject();
+		}
 		var kv = "";
 		if( isSimpleValue(keyValues) ){
 			keyValues = listToArray(keyValues);
@@ -104,9 +134,9 @@
 				var value = kv[key];
 			}
 
-			dbo.append( key, value );
+			dbObject.append( key, value );
 		}
-		return dbo;
+		return dbObject;
 	}
 
 	function listToStruct(list){

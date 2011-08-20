@@ -9,8 +9,20 @@ public class MongoDBOperationOnlyTyper implements Typer {
 	}
 	
 	@Override
-	public Object toJavaType(Object val) {
-		return val;
+	public Object toJavaType( Object value ) {
+		if( value instanceof java.lang.String ){
+			if( value.equals("1") || value.equals("1.0") ){
+				return 1;
+			}
+			if( value.equals("-1") || value.equals("-1.0") ){
+				return -1;
+			}
+			if( value.equals("0") || value.equals("0.0") ){
+				return 0;
+			}
+		}
+		
+		return value;
 	}
 
 }

@@ -28,6 +28,10 @@
 		return mongoUtil.toMongo( doc );
 	}
 
+	private function toMongoOperation( doc ){
+		return mongoUtil.toMongoOperation( doc );
+	}
+
 	private function toCF( dbObject ){
 		if( isNull( dbObject ) ){
 			return javacast("null","");
@@ -82,8 +86,8 @@
 	  writeDump( var=result.asArray(), label="For query #result.getQuery().toString()# with sort #result.getSort().toString()#, returning #result.size()# of #result.totalCount()# documents" );
 	*/
 	function find( struct criteria="#structNew()#", string keys="", numeric skip=0, numeric limit=0, any sort="#structNew()#" ){
-		var _keys = mongoUtil.createOrderedDBObject(arguments.keys);
-		sort = toMongo(sort);
+		var _keys = mongoUtil.createOrderedDBObject(arguments.keys, mongoUtil.newOperationalDBObject());
+		sort = toMongoOperation( sort );
 		var search_results = [];
 		criteria = toMongo( criteria );
 		search_results = collection.find(criteria, _keys).limit(limit).skip(skip).sort(sort);
@@ -142,11 +146,11 @@
 				arguments[local.k] = local.argumentDefaults[local.k];
 			}
 		}
-		sort = toMongo( sort );
+		sort = toMongoOperation( sort );
 
 		var updated = collection.findAndModify(
 			toMongo(query),
-			toMongo(fields),
+			toMongoOperation(fields),
 			sort,
 			remove,
 			toMongo(update),
