@@ -29,6 +29,7 @@ import cfmongodb.core.*;
 	}
 
 	function tearDown(){
+		dbAtomicCol.remove({});
 		commonTearDown();
 	}
 
@@ -147,19 +148,54 @@ import cfmongodb.core.*;
 		assertEquals( 3, doc.three );
 	}
 
+	// The following tests aren't technically necessary as they simply test mongodb itself and not cfmongodb; however, I have them here as examples of usage
 	function update_should_increment_when_$inc_is_used(){
 		var wesley = {"name" = "unittest", "lifeleft"=50, "torturemachine"=true};
-		dbCol.save( wesley );
+		dbAtomicCol.save( wesley );
 
 		var suckLifeOut = {"$inc" = {"lifeleft" = -1}};
 		var victim = { "name" = "unittest", "torturemachine" = true};
-		dbCol.update( doc = suckLifeOut, query = victim );
+		dbAtomicCol.update( doc = suckLifeOut, query = victim );
 
-		var rugenVictim = dbCol.query().$eq("torturemachine", true).find().asArray();
+		var rugenVictim = dbAtomicCol.find({"torturemachine" = true}).asArray();
 		debug(rugenVictim);
 
 		assertEquals(wesley.lifeleft-1, rugenVictim[1].lifeleft);
 	}
+
+	function update_should_unset_when_$unset_is_used(){
+		var wesley = {"name" = "wesley", "lifeleft"=50, "torturemachine"=true};
+		dbAtomicCol.save( wesley );
+		var victim = {"name" = "wesley"};
+		var noTorture = {"$unset" = {"torturemachine" = 1}};
+		dbAtomicCol.update( doc=noTorture, query=victim);
+		var luckyWesley = dbAtomicCol.find({"name" = "wesley"}).asArray()[1];
+		assertFalse( structKeyExists(luckyWesley, "torturemachine"), "torturemachine should not have existed but did" );
+	}
+
+	function update_should_push_when_$push_is_used(){
+		var wesley = {"name" = "wesley", "lifeleft"=50};
+		dbAtomicCol.save( wesley );
+		var victim = {"name" = "wesley"};
+		var newFriend = {"$push" = {"friends" = "Inigo"}};
+		dbAtomicCol.update( doc=newFriend, query=victim );
+		newFriend = {"$push" = {"friends" = "Giant"}};
+		dbAtomicCol.update( doc=newFriend, query=victim );
+		var luckyWesley = dbAtomicCol.find({"name" = "wesley"}).asArray()[1];
+		assertEquals( 2, arrayLen(luckyWesley.friends) );
+	}
+
+	function update_should_pushAll_when_$pushAll_is_used(){
+		var wesley = {"name" = "wesley", "lifeleft"=50};
+		dbAtomicCol.save( wesley );
+		var victim = {"name" = "wesley"};
+		var newFriends = {"$pushAll" = {"friends" = ["Inigo", "Giant"]}};
+		dbAtomicCol.update( doc=newFriends, query=victim );
+		var luckyWesley = dbAtomicCol.find({"name" = "wesley"}).asArray()[1];
+		assertTrue( structKeyExists(luckyWesley, "friends") and isArray(luckyWesley.friends) );
+		assertEquals( 2, arrayLen(luckyWesley.friends) );
+	}
+
 
 
 	/*     FIND     */

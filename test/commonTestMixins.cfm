@@ -35,7 +35,6 @@
 		var delete = {"name"="unittest"};
 		var atomicDelete = {};
 		mongo.remove( delete, col );
-
 		mongo.close();
 	}
 
