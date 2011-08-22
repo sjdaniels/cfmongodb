@@ -196,6 +196,18 @@ import cfmongodb.core.*;
 		assertEquals( 2, arrayLen(luckyWesley.friends) );
 	}
 
+	function update_should_addToSet_when_$addToSet_is_used(){
+		var wesley = {"name" = "wesley", "lifeleft"=50, "friends" = ["Inigo"]};
+		dbAtomicCol.save( wesley );
+		var victim = {"name" = "wesley"};
+		var newFriends = {"$addToSet" = {"friends" = { "$each" = ["Giant", "Inigo"] } }};
+		dbAtomicCol.update( doc=newFriends, query=victim );
+		var luckyWesley = dbAtomicCol.find({"name" = "wesley"}).asArray()[1];
+		//debug(luckyWesley);
+		assertTrue( structKeyExists(luckyWesley, "friends") and isArray(luckyWesley.friends) );
+		assertEquals( 2, arrayLen(luckyWesley.friends), "should only be two friends because addToSet will only add if the value isn't present in the array" );
+	}
+
 
 
 	/*     FIND     */
