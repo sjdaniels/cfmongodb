@@ -5,14 +5,9 @@ against unindexed fields will fail, thus throwing off the tests.
 You should absolutely NOT run an ensureIndex on your columns every time you run a query!
 
  --->
-<cfcomponent output="false" extends="mxunit.framework.TestCase">
+<cfcomponent output="false" extends="BaseTestCase">
 <cfscript>
 import cfmongodb.core.*;
-
-
-	javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
-	mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="cfmongodb_tests", mongoFactory=javaloaderFactory);
-	//mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="cfmongodb_tests");
 
 
 	function setUp(){
@@ -36,7 +31,7 @@ import cfmongodb.core.*;
 
 	function getMongoDBCollection_should_return_underlying_java_DBCollection(){
 		var jColl = dbCol.getMongoDBCollection();
-		assertEquals("com.mongodb.DBApiLayer.mycollection",jColl.getClass().getCanonicalName());
+		assertEquals("com.mongodb.DBApiLayer.mycollection", jColl.getClass().getCanonicalName());
 	}
 
 	function getMongoDBCollection_should_be_acceptably_fast(){

@@ -8,8 +8,8 @@
 <cfinvoke component="#DTS#"
 	method="run"
 	directory="#dir#"
-	componentpath="cfmongodb.test"
-	recurse="false"
+	componentpath="cfmongodb.test.withLibsFromCFClasspath"
+	recurse="true"
 	excludes=""
 	returnvariable="Results">
 

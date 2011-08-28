@@ -33,14 +33,16 @@ then attempted to query against it
 
  --->
 
-<cfcomponent output="false" extends="mxunit.framework.TestCase">
+<cfcomponent output="false" extends="BaseTestCase">
 <cfscript>
 	import cfmongodb.core.*;
 
 	variables.testDatabase = "cfmongodb_auth_tests";
 	variables.testCollection = "authtests";
-	variables.javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
-	variables.mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName=variables.testDatabase, mongoFactory=javaloaderFactory);
+
+	function beforeTests(){
+		 mongoConfig = getMongoConfig( variables.testDatabase );
+	}
 
 	function authentication_should_error_when_authentication_fails() {
 

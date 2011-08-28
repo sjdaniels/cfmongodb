@@ -1,10 +1,6 @@
-<cfcomponent output="false" extends="mxunit.framework.TestCase">
+<cfcomponent output="false" extends="BaseTestCase">
 <cfscript>
 import cfmongodb.core.*;
-
-
-	javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
-	mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="cfmongodb_tests", mongoFactory=javaloaderFactory);
 
 
 	function setUp(){

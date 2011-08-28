@@ -5,14 +5,9 @@ against unindexed fields will fail, thus throwing off the tests.
 You should absolutely NOT run an ensureIndex on your columns every time you run a query!
 
  --->
-<cfcomponent output="false" extends="mxunit.framework.TestCase">
+<cfcomponent output="false" extends="BaseTestCase">
 <cfscript>
 import cfmongodb.core.*;
-
-
-	javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
-	mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="cfmongodb_tests", mongoFactory=javaloaderFactory);
-	//mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName="cfmongodb_tests");
 
 
 	function setUp(){
@@ -36,7 +31,7 @@ import cfmongodb.core.*;
 		//NOTE: this is not a true CF struct, but a regular java hashmap; consequently, it is case sensitive!
 		assertTrue( structCount(result["commands"]) GT 1);
 	}
-	
+
 	function mongo_can_list_collections(){
 		var jMongoDB = mongo.getMongoDB();
 		var collections = jMongoDB.getCollectionNames();
@@ -100,7 +95,8 @@ import cfmongodb.core.*;
 
 	function newDBObject_should_be_acceptably_fast(){
 		var i = 1;
-		var count = 500;
+		var count = 1000;
+		var expectedTime = 200;
 		var u = mongo.getMongoUtil();
 		var st = {string="string",number=1,float=1.5,date=now(),boolean=true};
 		//get the first one out of its system
@@ -110,7 +106,7 @@ import cfmongodb.core.*;
 			dbo = u.toMongo( st );
 		}
 		var total = getTickCount() - startTS;
-		assertTrue( total lt 200, "total should be acceptably fast but was #total#" );
+		assertTrue( total lt expectedTime, "total to create #count# objects should be acceptably fast (#expectedTime#) but was #total#" );
 	}
 
 	function newDBObject_should_create_correct_datatypes(){
@@ -181,7 +177,7 @@ import cfmongodb.core.*;
 	function whatsUpWithCFBasicDBObject(){
 		var dude = {name="TheDude", abides=true, age=100};
 		var dboDude = mongo.getMongoUtil().toMongo( dude );
-		var mongoDBO = javaloaderFactory.getObject("com.mongodb.BasicDBObject");
+		var mongoDBO = mongoConfig.getMongoFactory().getObject("com.mongodb.BasicDBObject");
 		mongoDBO.putAll(dude);
 		debug( isStruct(dboDude) );
 		debug( isObject(dboDude) );
@@ -192,7 +188,7 @@ import cfmongodb.core.*;
 		debug( mongoDBO.toString() );
 		debug( dboDude.toString() );
 	}
-	
+
  </cfscript>
 
  <!--- include these here so they don't mess up the line numbering --->
