@@ -35,15 +35,15 @@ import cfmongodb.core.*;
 	function mongo_can_list_collections(){
 		var jMongoDB = mongo.getMongoDB();
 		var collections = jMongoDB.getCollectionNames();
-		debug(collections);
-		debug(collections.toString());
+		//debug(collections);
+		//debug(collections.toString());
 		assertTrue( collections.size() GT 0 );
 	}
 
 	function mongoOptions_should_be_available(){
 		var options = mongo.getMongo().getMongoOptions();
-		debug(mongo.getMongo());
-		debug(mongo.getMongo().toString());
+		//debug(mongo.getMongo());
+		//debug(mongo.getMongo().toString());
 
 		debug(options);
 		debug(options.toString());
@@ -95,7 +95,7 @@ import cfmongodb.core.*;
 
 	function newDBObject_should_be_acceptably_fast(){
 		var i = 1;
-		var count = 1000;
+		var count = 500;
 		var expectedTime = 200;
 		var u = mongo.getMongoUtil();
 		var st = {string="string",number=1,float=1.5,date=now(),boolean=true};

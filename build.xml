@@ -87,7 +87,7 @@
 
 	<target name="dist" depends="init,jar" description="Builds the zip file for deployment">
 		<zip destfile="${dist.dir}/${dist.zip}">
-			<zipfileset dir="." excludes="${test.dir.name}/, .git/, .gitignore, deploy/, .project, build.xml, settings.xml, .settings, java/bin/" prefix="${dist.prefixInZip}" casesensitive="false" />
+			<zipfileset dir="." excludes=".git/, .gitignore, deploy/, settings.xml, .settings, java/bin/" prefix="${dist.prefixInZip}" casesensitive="false" />
 		</zip>
 	</target>
 	

@@ -39,7 +39,7 @@ import cfmongodb.core.*;
 			finalize=finalize
 		);
 
-		debug(groups);
+		//debug(groups);
 
 		//all these assertions are based on the articles we created below. This is static so that the tests are determinant
 		assertEquals( 4, arrayLen(groups), "should have 4 groups because we had 4 different statuses");
@@ -114,7 +114,7 @@ import cfmongodb.core.*;
 
 		var sorted = mongo.getDBCollection("article_topic_rank").find(sort={"value.count"=-1});
 		var sortedResult = sorted.asArray();
-		debug(sortedResult);
+		//debug(sortedResult);
 		assertEquals(10, sortedResult[1]["value"]["count"] );
 		assertEquals(1, sortedResult[1]["value"]["rank"] );
 		assertEquals(2, sortedResult[4]["value"]["count"] );
@@ -146,7 +146,7 @@ import cfmongodb.core.*;
 		";
 
 		var result = dbCol.mapReduce( map=map, reduce=reduce, outputTarget="map_reduce_error" );
-		debug(result);
+		//debug(result);
 	}
 
 

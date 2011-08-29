@@ -52,7 +52,7 @@ then attempted to query against it
 		expectException("com.mongodb.CommandResult$CommandFailure");
 		mongo.init(mongoConfig);
 		var authResult = mongo.authenticate( "username", "verysecurepassword!" );
-		debug(authResult);
+		//debug(authResult);
 	}
 
 	function authentication_should_not_error_when_authentication_passes() {

@@ -15,8 +15,8 @@
 	</cffunction>
 
 	<cffunction name='thisTestUsesCorrectFactory'>
-		<cfset debug( factoryType )>
-		<cfset debug( getMetadata(mongoConfig.getMongoFactory()).fullName )>
+		<!---<cfset debug( factoryType )>
+		<cfset debug( getMetadata(mongoConfig.getMongoFactory()).fullName )>--->
 		<cfset assertEquals( factoryType, getMetadata(mongoConfig.getMongoFactory()).fullName )>
 	</cffunction>
 

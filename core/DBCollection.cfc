@@ -53,6 +53,8 @@
 		return variables.collection;
 	}
 
+	function getNothing(){};
+
 	/**
 	* Returns a single document matching the passed in id (i.e. the mongo _id)
 

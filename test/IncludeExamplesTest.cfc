@@ -16,8 +16,8 @@
 		<cfset var path = "">
 		<cfset var currentURL = "">
 
-		<cfset debug(factoryType)>
-		<cfset debug(useJavaLoader)>
+		<!---<cfset debug(factoryType)>
+		<cfset debug(useJavaLoader)>--->
 		<cfloop array="#paths#" index="path">
 			<cfset currentURL = variables.rootURL & path>
 			<cfhttp method="get" url="#currentURL#?reload=true&useJavaLoader=#useJavaLoader#" result="httpResult">

@@ -35,11 +35,13 @@ import cfmongodb.core.*;
 	}
 
 	function getMongoDBCollection_should_be_acceptably_fast(){
+		var x = "";
 		var collectionTS = getTickCount();
 		for( x = 1; x LTE 1000; x++ ){
 			dbCol.getMongoDBCollection();
+			//dbCol.getNothing();
 		}
-		collectionTotal = getTickCount() - collectionTS;
+		var collectionTotal = getTickCount() - collectionTS;
 		assertTrue( collectionTotal LT 50, "collections should return instantaneously. Returned 1000 times in #collectionTotal#" );
 	}
 
@@ -111,11 +113,11 @@ import cfmongodb.core.*;
 	  var results = dbCol.query().startsWith('name','jabber').find();
 
 	  var replace_this = results.asArray()[1];
-	  debug(replace_this);
+	 // debug(replace_this);
 	  replace_this['name'] = 'bill';
 	  dbCol.update( replace_this );
 	  results = dbCol.query().$eq('name', 'bill' ).find();
-	  debug(results.asArray());
+	 // debug(results.asArray());
 	  var finalSize = results.size();
 	  var writeResult = dbCol.remove( replace_this );
 
@@ -133,7 +135,7 @@ import cfmongodb.core.*;
 
 		var all = col.find();
 		var asArray = all.asArray();
-		debug(asArray);
+		//debug(asArray);
 		assertEquals( 1, all.size() );
 		var doc = asArray[1];
 
@@ -153,7 +155,7 @@ import cfmongodb.core.*;
 		dbAtomicCol.update( doc = suckLifeOut, query = victim );
 
 		var rugenVictim = dbAtomicCol.find({"torturemachine" = true}).asArray();
-		debug(rugenVictim);
+		//debug(rugenVictim);
 
 		assertEquals(wesley.lifeleft-1, rugenVictim[1].lifeleft);
 	}
@@ -227,8 +229,8 @@ import cfmongodb.core.*;
 
 		var ascResults = asc.asArray();
 		var descResults = desc.asArray();
-		debug( desc.getQuery().toString() );
-		debug( desc.getSort().toString() );
+		//debug( desc.getQuery().toString() );
+		//debug( desc.getSort().toString() );
 
 		//assertTrue( NOT find("1.0", asc.getSort().toString()), "1 and -1 should remain as integers in the sort object" );
 		//assertTrue( NOT find("-1.0", desc.getSort().toString()), "1 and -1 should remain as integers in the sort object" );
@@ -274,7 +276,7 @@ import cfmongodb.core.*;
 	function find_should_handle_datatypes_correctly(){
 		var people = createPeople(5, true);
 		var one = dbCol.find( {"counter"=3} );
-		debug(one);
+		//debug(one);
 		assertEquals(1, one.size());
 		var doc = one.asArray()[1];
 		assertEquals( 3, doc.counter );
@@ -369,7 +371,7 @@ import cfmongodb.core.*;
 
 		//use the keyf function to create a composite key
 		groupResult = dbGroupsCol.group( keys="", initial={TOTAL=0}, reduce="function(obj,agg){ agg.TOTAL++; }", keyf="function(doc){ return {'TASK_STATUS' : doc.STATUS }; }"  );
-		debug(groupResult);
+		//debug(groupResult);
 
 		//TODO: get a better example of keyf
 		assertTrue( structKeyExists(groupResult[1], "TASK_STATUS"), "Key should have been TASK_STATUS since we override the key in keyf function" );
