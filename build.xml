@@ -82,7 +82,7 @@
 
 	</target>
 	
-	<target name="runCFJavaloaderTests" depends="init,clean,jar">
+	<target name="runCFJavaloaderTests" depends="init,clean">
 		<delete dir="${test.output.xml}/withCFJavaloader" failonerror="false" />
 		<mkdir dir="${test.output.xml}/withCFJavaloader" />
 		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask" classpathref="project.classpath" />
@@ -91,7 +91,7 @@
 		</mxunittask>
 	</target>
 	
-	<target name="runWithLibsFromClasspathTests" depends="init,clean,jar">
+	<target name="runWithLibsFromClasspathTests" depends="init,clean">
 		<delete dir="${test.output.xml}/withLibsFromCFClasspath" failonerror="false" />
 		<mkdir dir="${test.output.xml}/withLibsFromCFClasspath" />
 		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask" classpathref="project.classpath" />
