@@ -73,15 +73,31 @@
 	</target>
 
 	<target name="runtests" description="Make output directories and run the MXUnit task" depends="init,clean,jar">
-		<delete dir="${test.output}" failonerror="false" />
-		<delete dir="${dist.dir}" failonerror="false" />
-		<mkdir dir="${test.output.xml}" />
-		<mkdir dir="${dist.dir}" />
+		<delete dir="${test.output.xml}/core" failonerror="false" />
+		<mkdir dir="${test.output.xml}/core" />
 		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask" classpathref="project.classpath" />
-		<mxunittask server="${test.server}" port="${test.serverport}" defaultrunner="${test.runner}" outputdir="${test.output.xml}" verbose="true">
-			<directory path="${test.dir.location}" recurse="true" packageName="${test.cfcpath}" componentPath="${test.cfcpath}" />
+		<mxunittask server="${test.server}" port="${test.serverport}" defaultrunner="${test.runner}" outputdir="${test.output.xml}/core" verbose="true">
+			<directory path="${test.dir.location}" recurse="false" packageName="${test.cfcpath}" componentPath="${test.cfcpath}" />
 		</mxunittask>
 
+	</target>
+	
+	<target name="runCFJavaloaderTests" depends="init,clean,jar">
+		<delete dir="${test.output.xml}/withCFJavaloader" failonerror="false" />
+		<mkdir dir="${test.output.xml}/withCFJavaloader" />
+		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask" classpathref="project.classpath" />
+		<mxunittask server="${test.server}" port="${test.serverport}" defaultrunner="/cfmongodb/test/withCFJavaloader/HttpAntRunner.cfc" outputdir="${test.output.xml}/withCFJavaloader" verbose="true">
+			<directory path="${test.dir.location}/withCFJavaloader" recurse="false" packageName="${test.cfcpath}.withCFJavaloader" componentPath="${test.cfcpath}.withCFJavaloader" />
+		</mxunittask>
+	</target>
+	
+	<target name="runWithLibsFromClasspathTests" depends="init,clean,jar">
+		<delete dir="${test.output.xml}/withLibsFromCFClasspath" failonerror="false" />
+		<mkdir dir="${test.output.xml}/withLibsFromCFClasspath" />
+		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask" classpathref="project.classpath" />
+		<mxunittask server="${test.server}" port="${test.serverport}" defaultrunner="${test.runner}" outputdir="${test.output.xml}/withLibsFromCFClasspath" verbose="true">
+			<directory path="${test.dir.location}/withLibsFromCFClasspath" recurse="false" packageName="${test.cfcpath}.withLibsFromCFClasspath" componentPath="${test.cfcpath}.withLibsFromCFClasspath" />
+		</mxunittask>
 	</target>
 
 
