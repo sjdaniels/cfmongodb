@@ -22,6 +22,6 @@
 
 <cfif isBoolean(url.debug) AND url.debug>
 	<div class="bodypad">
-		<cfdump var="#results.getResults()#" label="Debug">
+		<cfdump var="#results#" label="Debug">
 	</div>
 </cfif>

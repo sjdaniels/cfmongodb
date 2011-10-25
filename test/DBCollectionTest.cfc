@@ -266,6 +266,28 @@ import cfmongodb.core.*;
 		assertEquals(id, fetched._id.toString());
 	}
 
+	function find_should_return_results_for_mongo_id_in_other_document(){
+		var id = dbCol.save( doc );
+		var newDoc = { 'name' = 'unittest', 'someidstring' = id.toString(), 'someidobject' = id };
+		dbCol.save( newDoc );
+
+		//search by the field containing the string version of the id
+		var withStringResult = dbCol.find( {"someidstring" = id.toString()} );
+		assertEquals( 1, arrayLen(withStringResult.asArray()) );
+		assertEquals( newDoc._id, withStringResult.asArray()[1]._id );
+
+		//search by the field containing the object ID, using dbcol.find()
+		var withObjectResult = dbCol.find( {"someidobject" = id} );
+		assertEquals( 1, arrayLen(withObjectResult.asArray()) );
+		assertEquals( newDoc._id, withObjectResult.asArray()[1]._id );
+
+		//search by the field containing the object ID, using dbcol.query().$eq().find
+		var withObjectResultUsingEq = dbCol.query().$eq( "someidobject", id ).find();
+		assertEquals( 1, arrayLen(withObjectResultUsingEq.asArray()) );
+		assertEquals( newDoc._id, withObjectResultUsingEq.asArray()[1]._id );
+
+	}
+
 	function find_should_be_equivalent_to_search(){
 		var people = createPeople(5, true);
 		var fullViaQuery = dbCol.query(col).$eq("name", "unittest").find();
