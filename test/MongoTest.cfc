@@ -11,18 +11,14 @@ import cfmongodb.core.*;
 
 
 	function setUp(){
-		mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
 		col = 'people';
 		dbCol = mongo.getDBCollection( col );
 		atomicCol = 'atomictests';
 		deleteCol = 'deletetests';
 
-		commonSetUp();
+		super.setUp();
 	}
 
-	function tearDown(){
-		commonTearDown();
-	}
 
 	function mongo_can_list_commands_via_mongo_driver(){
 		var result = mongo.getMongoDB().command("listCommands");
@@ -190,9 +186,6 @@ import cfmongodb.core.*;
 	}
 
  </cfscript>
-
- <!--- include these here so they don't mess up the line numbering --->
- <cfinclude template="commonTestMixins.cfm">
 
 </cfcomponent>
 

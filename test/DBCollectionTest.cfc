@@ -11,7 +11,6 @@ import cfmongodb.core.*;
 
 
 	function setUp(){
-		mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
 		col = 'people';
 		dbCol = mongo.getDBCollection( col );
 
@@ -20,12 +19,12 @@ import cfmongodb.core.*;
 
 		deleteCol = 'deletetests';
 		dbDeleteCol = mongo.getDBCollection( deleteCol );
-		commonSetUp();
+		super.setUp();
 	}
 
 	function tearDown(){
 		dbAtomicCol.remove({});
-		commonTearDown();
+		super.tearDown();
 	}
 
 
@@ -500,8 +499,6 @@ import cfmongodb.core.*;
 	}
  </cfscript>
 
- <!--- include these here so they don't mess up the line numbering --->
- <cfinclude template="commonTestMixins.cfm">
 
 </cfcomponent>
 

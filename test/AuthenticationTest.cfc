@@ -42,6 +42,7 @@ then attempted to query against it
 
 	function beforeTests(){
 		 mongoConfig = getMongoConfig( variables.testDatabase );
+		 mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
 	}
 
 	function authentication_should_error_when_authentication_fails() {

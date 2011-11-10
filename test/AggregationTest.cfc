@@ -8,12 +8,12 @@ import cfmongodb.core.*;
 		col = 'articles';
 		dbCol = mongo.getDBCollection( col );
 
-		commonSetUp();
+		super.setUp();
 	}
 
 	function tearDown(){
 		dbCol.remove({});
-		commonTearDown();
+		super.TearDown();
 	}
 
 	function group_should_aggregate(){
@@ -183,9 +183,6 @@ import cfmongodb.core.*;
 		return articles;
 	}
  </cfscript>
-
- <!--- include these here so they don't mess up the line numbering --->
- <cfinclude template="commonTestMixins.cfm">
 
 </cfcomponent>
 
