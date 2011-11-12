@@ -124,6 +124,7 @@ import cfmongodb.core.*;
 		var newNestedFloats = mongo.query( col ).$eq("types.floats",1.3).count();
 		var newString = mongo.query( col ).$eq("address.street", "123 big top lane").count();
 
+
 		assertEquals( origNums+1, newNums );
 		assertEquals( origNestedNums+1, newNestedNums );
 		assertEquals( origBool+1, newBool );
@@ -132,6 +133,14 @@ import cfmongodb.core.*;
 		assertEquals( origNestedFloats+1, newNestedFloats );
 		assertEquals( origString+1, newString );
 
+		debug(doc);
+		var fetched = dbCol.findById( doc._id );
+		debug(fetched);
+
+		/*assertEquals( doc["types"]["floats"], fetched["types"]["floats"] );
+		assertEquals( doc.negativeFloat, fetched.negativeFloat, "negativeFloat should be equal" );
+		assertEquals( doc.positiveFloat, fetched.positiveFloat, "positiveFloat should be equal" );*/
+		assertEquals( doc, fetched );
 	}
 
 	/**

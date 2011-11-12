@@ -59,9 +59,9 @@ public class CFStrictTyper implements Typer {
 			}
 			
 			try {
-				return Float.parseFloat(stringValue);
+				return Double.parseDouble(stringValue);
 			} catch (Exception e) {
-				//nothing; it's not a float
+				//nothing; it's not a double
 			}
 		}
 		return value;
