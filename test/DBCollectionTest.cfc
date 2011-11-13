@@ -333,6 +333,16 @@ import cfmongodb.core.*;
 		assertEquals( "unittest", one.name );
 	}
 
+	function findOne_should_return_null_when_no_records_found() {
+		var none = dbCol.findOne({"name"="doesn'texist"});
+		assertTrue( isNull( none ) );
+	}
+
+	function find_should_return_empty_array_when_no_records_found() {
+		var none = dbCol.find({"name"="doesn'texist"});
+		assertTrue( arrayIsEmpty(none.asArray()) );
+	}
+
 	function findAndModify_should_atomically_update_and_return_new(){
 		var collection = "atomictests";
 		var dbAtomicCol = mongo.getDBCollection(collection);
