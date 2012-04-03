@@ -333,6 +333,15 @@ import cfmongodb.core.*;
 		assertEquals( "unittest", one.name );
 	}
 
+	function findOne_returns_first_document_when_using_id_field(){
+		//test Chris Blackwell's weird condition where it was choosing the findOne(Object obj) method instead of findOne(DBObject query)
+		dbCol.save({"name"="unittest", "id"=5, "i"=1});
+		dbCol.save({"name"="unittest", "id"=6, "i"=2});
+		var result = dbCol.findOne({"id"=5});
+		debug(result);
+		assertEquals( 1, result.i );
+	}
+
 	function findOne_should_return_null_when_no_records_found() {
 		var none = dbCol.findOne({"name"="doesn'texist"});
 		assertTrue( isNull( none ) );
