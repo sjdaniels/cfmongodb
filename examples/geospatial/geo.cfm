@@ -17,6 +17,9 @@
 		//as of this writing, you can perform geo queries like so:
 		nearResult = dbCol.query().add( "LOC", {"$near" = [38,-85]} ).find(limit=10);
 		writeDump( var = nearResult.asArray(), label = "$near result" );
+
+		//nearSphereResult = dbCol.query().add( "LOC", {"$nearSphere" = [45.46427, 9.18951], "$maxDistance" = 5} ).find(limit=10);
+		//writeDump( var = nearSphereResult.asArray(), label = "$nearSphere result" );
 	}
 		catch(Any e){
 		writeDump(e);
