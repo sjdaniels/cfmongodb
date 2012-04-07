@@ -1,3 +1,4 @@
+<cfsetting requesttimeout="500">
 
 <!--- create the mongo objects --->
 <cfset variables.dbName = "cfmongodb_benchmarks">
@@ -16,7 +17,7 @@
 
 	dataCreateStart = getTickCount();
 	coolPeople = [];
-	totalDocs = 1000;
+	totalDocs = 50000;
 	for( i = 1; i LTE totalDocs; i++ ){
 		DOC =
 		{
@@ -30,11 +31,16 @@
 			TS = now(),
 			COUNTER = i,
 			MONGOROCKS = true,
-			PRODUCT = serverName
+			PRODUCT = serverName,
+			PRICE = randRange(1,1000),
+			TICK = getTickCount(),
+			SKU = repeatString( randRange(1,100), "10" )
 		};
 		arrayAppend( coolPeople, doc );
 	}
 	dataCreateTotal = getTickCount() - dataCreateStart;
+
+	writeOutput("Total docs: #arrayLen(coolPeople)# in #dataCreateTotal# ms");
 
 	saveStart = getTickCount();
 
@@ -44,6 +50,8 @@
 
 	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='structs', USEJL=url.useJavaLoader, PRODUCT=serverName, TS=now() };
 	metricsCol.save( stat );
+
+	writeDump(stat);
 
 
 	dataCreateStart = getTickCount();
@@ -61,7 +69,10 @@
 			TS = now(),
 			COUNTER = i,
 			MONGOROCKS = true,
-			PRODUCT = serverName
+			PRODUCT = serverName,
+			PRICE = randRange(1,1000),
+			TICK = getTickCount(),
+			SKU = repeatString( randRange(1,100), "10" )
 		};
 		arrayAppend( coolPeople, mongoUtil.toMongo(doc) );
 	}
@@ -77,6 +88,7 @@
 	stat = { DATATOTAL=dataCreateTotal, SAVETOTAL=saveTotal, COUNT=totalDocs, SAVETYPE='dbos', USEJL=url.useJavaLoader, PRODUCT=serverName, TS=now() };
 	metricsCol.save( stat );
 
+	writeDump(stat);
 
 
 	reduce = "
@@ -101,14 +113,10 @@
 		keys="PRODUCT,SAVETYPE,USEJL",
 		initial={COUNT=0,SAVETOTAL=0,DATATOTAL=0},
 		reduce=reduce,
-		query={COUNT = 1000, PRODUCT = {"$exists" = true} },
+		query={COUNT = totalDocs, PRODUCT = {"$exists" = true} },
 		finalize=finalize
 	);
 
 
 	writeDump(metricsResults);
-
-
-
-
 </cfscript>
