@@ -400,7 +400,7 @@
 	]
 
 	*/
-	public array function ensureIndex(array fields, unique=false, dropDups=false, sparse=false, background=false ){
+	public array function ensureIndex(array fields, unique=false, dropDups=false, sparse=false, background=false, name ){
 	 	var pos = 1;
 	 	var doc = {};
 	 	var options = {};
@@ -417,8 +417,11 @@
 			}
 			indexName = listAppend( indexName, fieldName, "_");
 	 	}
+	 	
+	 	if(isNull(arguments.name)) indexName = "_#indexName#_";
+	 	else indexName = arguments.name;	
 
-		options = { "unique" = unique, "name" = "_#indexName#_", "dropDups" = dropDups, "sparse" = sparse, "background" = background};
+		options = { "unique" = unique, "name" = indexName, "dropDups" = dropDups, "sparse" = sparse, "background" = background};
 	 	collection.ensureIndex( toMongo( doc ), toMongo( options ) );
 
 	 	return getIndexes(collectionName, mongoConfig);
