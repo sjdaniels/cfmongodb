@@ -194,6 +194,10 @@ import cfmongodb.core.*;
 		debug( dboDude.toString() );
 	}
 
+	private function howToDoSSL(){
+		mongo.getMongo().getMongoOptions().socketFactory = createObject("java", "javax.net.ssl.SSLSocketFactory").getDefault();
+	}
+
  </cfscript>
 
 </cfcomponent>
