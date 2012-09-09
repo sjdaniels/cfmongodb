@@ -6,21 +6,21 @@
     DSL for MongoDB searches:
 
     query = collection.query().
-    				startsWith('name','foo').  //string
-                    endsWith('title','bar').   //string
-                    like('field','value').   //string
-					          regex('field','value').    //string
-                    eq('field','value').       //numeric
-                    lt('field','value').       //numeric
-                    gt('field','value').       //numeric
-                    gte('field','value').      //numeric
-                    lte('field','value').      //numeric
-                    in('field','value').       //array
-                    nin('field','value').      //array
-                    mod('field','value').      //numeric
-                    size('field','value').     //numeric
-                    after('field','value').    //date
-                    before('field','value');   //date
+                    startsWith('name','foo').                   //string
+                    endsWith('title','bar').                    //string
+                    like('field','value','ignoreCase'=false).   //string
+                    regex('field','value','ignoreCase'=false).  //string
+                    eq('field','value').                        //numeric
+                    lt('field','value').                        //numeric
+                    gt('field','value').                        //numeric
+                    gte('field','value').                       //numeric
+                    lte('field','value').                       //numeric
+                    in('field','value').                        //array
+                    nin('field','value').                       //array
+                    mod('field','value').                       //numeric
+                    size('field','value').                      //numeric
+                    after('field','value').                     //date
+                    before('field','value');                    //date
 
 
     results = query.find(keys=[keys_to_return],limit=num,start=num);
@@ -71,19 +71,17 @@ function endsWith(element, val){
 }
 
 
-function like(element, val){
+function like(element, val, ignoreCase=false){
   var regex = '.*' & val & '.*';
-  builder.add( element, pattern.compile(regex) );
+  builder.add( element, pattern.compile(regex, ignoreCase ? pattern.CASE_INSENSITIVE : 0) );
   return this;
 }
 
-
-function regex(element, val){
+function regex(element, val, ignoreCase=false){
   var regex = val;
-  builder.add( element, pattern.compile(regex) );
+  builder.add( element, pattern.compile(regex, ignoreCase ? pattern.CASE_INSENSITIVE : 0) );
   return this;
 }
-
 
 //May need at least some exception handling
 function where( js_expression ){
