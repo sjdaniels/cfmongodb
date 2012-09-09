@@ -7,6 +7,19 @@ h2{
 }
 </style>
 
+<h1>Getting Started</h1>
+
+<p>The examples in this code are designed to show you how to use the CFMongoDB objects for saving and retrieving data to a running MongoDB datastore.
+However, this example creates a new mongo object, and closes it, every time it is run.
+</p>
+<p>
+In your applications, you <b>must</b> create the mongo object as an application-scoped singleton.
+See PeopleList/Application.cfc for an example. See the examples in <b>/examples/ioc</b> for constructing
+with ColdSpring or WireBox.
+</p>
+<p>If your applications create and close a mongo on every request, performance will suffer significantly.
+</p>
+
 <!--- pass 'false' in the URL to use the mongo jars in your cfusion lib directory --->
 <cfparam name="url.useJavaLoader" default="true">
 
@@ -53,6 +66,7 @@ h2{
 			COUNTER = 1
 		};
 
+	writeOutput("<h2>A saved document (struct)</h2>");
 	people.save( doc );
 
 	writeDump( var=doc, label="Saved document", expand="false" );
