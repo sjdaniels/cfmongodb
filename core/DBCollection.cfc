@@ -205,6 +205,46 @@
 	}
 
 
+
+    /**
+    * Executes Mongo's aggregate() wrapper. Returns an array of structs
+    
+    * takes one or more...(N) structs as arguments, each argument is a pipeline operation
+      usage:
+
+        result = collection.aggregate(
+            { "$match"={ "status"="active" } }, // include only docs with status=active
+            { "$project"= { "author"=1, "sales"=1 } }, // reshape the docs to only include author and sales
+            { "$group"= { "_id"="$author", "totalSales"={ "$sum"="sales" } } } // group by author, calculate total sales by summing sales.
+        );
+
+      See examples/aggregation/aggregate.cfm for detail
+      See also: http://docs.mongodb.org/manual/aggregation/
+    */
+    public function aggregate() {
+        var pipeline = [];
+
+        for (var arg in arguments) {
+           arrayappend(pipeline, arguments[arg] );
+        }
+
+        var dbCommand = [
+            { "aggregate" = collectionName },
+            { "pipeline"  = pipeline }
+        ];
+
+        
+        var cmdResult = mongoDB.command( mongoUtil.createOrderedDBObject(dbCommand) );
+
+
+        if( not cmdResult['ok']){
+            throw("Error message: #cmdResult['errmsg']#", "AggregateException", '', '', serializeJson(cmdResult));
+        }
+
+        return cmdResult["result"];
+    }
+
+
 	/**
 	* Executes Mongo's mapReduce command. Returns a MapReduceResult object
 
