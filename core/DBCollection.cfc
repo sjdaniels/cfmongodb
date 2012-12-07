@@ -208,7 +208,7 @@
 
     /**
     * Executes Mongo's aggregate() wrapper. Returns an array of structs
-    
+
     * takes one or more...(N) structs as arguments, each argument is a pipeline operation
       usage:
 
@@ -222,26 +222,16 @@
       See also: http://docs.mongodb.org/manual/aggregation/
     */
     public function aggregate() {
-        var pipeline = [];
+    	// WAT. the mongo java api for aggregate is, um, not ideal, which is why we split the args into two.
+        var firstOp = toMongo(arguments[1]);
+        var additionalOps = [];
 
-        for (var arg in arguments) {
-           arrayappend(pipeline, arguments[arg] );
-        }
+		for( var i = 2; i LTE arrayLen(arguments); i++ ){
+			arrayAppend(additionalOps, toMongo(arguments[i]) );
+		}
 
-        var dbCommand = [
-            { "aggregate" = collectionName },
-            { "pipeline"  = pipeline }
-        ];
-
-        
-        var cmdResult = mongoDB.command( mongoUtil.createOrderedDBObject(dbCommand) );
-
-
-        if( not cmdResult['ok']){
-            throw("Error message: #cmdResult['errmsg']#", "AggregateException", '', '', serializeJson(cmdResult));
-        }
-
-        return cmdResult["result"];
+		var output = collection.aggregate( firstOp, additionalOps );
+        return new AggregationResult( output, mongoUtil );
     }
 
 
@@ -457,9 +447,9 @@
 			}
 			indexName = listAppend( indexName, fieldName, "_");
 	 	}
-	 	
+
 	 	if(isNull(arguments.name)) indexName = "_#indexName#_";
-	 	else indexName = arguments.name;	
+	 	else indexName = arguments.name;
 
 		options = { "unique" = unique, "name" = indexName, "dropDups" = dropDups, "sparse" = sparse, "background" = background};
 	 	collection.ensureIndex( toMongo( doc ), toMongo( options ) );

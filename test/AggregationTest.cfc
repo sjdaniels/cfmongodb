@@ -149,6 +149,63 @@ import cfmongodb.core.*;
 		//debug(result);
 	}
 
+	function aggregate_accepts_single_operation(){
+		var articles = createArticles();
+		dbCol.saveAll(articles);
+		var op =  { "$group"={ "_id"="$STATUS", "total"={ "$sum"=1 } } };
+		var result = dbCol.aggregate(op);
+		var output = result.getAggregationOutput();
+		//inspect these to see what's available
+		debug( result );
+		debug( result.getCommand() );
+		debug( output.getServerUsed() );
+		debug( output.toString() );
+
+		var asArray = result.asArray();
+
+		//we know these b/c we created the input collection in createArticles()
+		assertEquals( 4, arrayLen(asArray) );
+		assertEquals( "C", asArray[1]._id );
+		assertEquals( 2, asArray[1].total );
+		assertEquals( "R", asArray[3]._id );
+		assertEquals( 3, asArray[3].total );
+
+		assertEquals( 1, arrayLen(result.getCommand().pipeline), "Original command had 1 entry, so command from return object should match" );
+
+		//ensure access to all java bits
+		assertTrue( len(output.toString()) GT 0 );
+		assertEquals( "com.mongodb.AggregationOutput", output.getClass().getName() );
+	}
+
+	function aggregate_accepts_multiple_operations(){
+		var articles = createArticles();
+		dbCol.saveAll(articles);
+		var group =  { "$group"={ "_id"="$STATUS", "total"={ "$sum"=1 } } };
+		var sortDesc = { "$sort"={ "total"=-1 } };
+		var sortAsc = { "$sort"={ "total"=1 } };
+		var result = dbCol.aggregate( group, sortDesc );
+		var asArray = result.asArray();
+		assertEquals( 4, arrayLen(asArray) );
+		assertTrue( asArray[1].total GT asArray[4].total, "We specified a descending sort so the first should've been larger" );
+
+		result = dbCol.aggregate( group, sortAsc );
+		asArrayAsc = result.asArray();
+		assertEquals( 4, arrayLen(asArrayAsc) );
+		assertNotEquals( asArray, asArrayAsc );
+		assertTrue( asArrayAsc[1].total LT asArrayAsc[4].total, "We specified a descending sort so the first should've been larger" );
+
+	}
+
+	/**
+	* @mxunit:expectedException com.mongodb.CommandResult$CommandFailure
+	*/
+	function aggregate_throws_error_with_bad_command(){
+		var op =  { "group"={ "_id"="$STATUS", "total"={ "$sum"=1 } } };
+		var result = dbCol.aggregate(op);
+		var output = result.getAggregationOutput();
+		debug(output.getCommandResult());
+	}
+
 
 	/**
 	* creates a dataset to work with both group and mapReduce
