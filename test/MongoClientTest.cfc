@@ -47,6 +47,25 @@ import cfmongodb.core.*;
 		debug(options.toString());
 	}
 
+	function mongoClientOptions_should_set_in_constructor(){
+		var factory = getMongoConfig().getMongoFactory();
+
+		//create a new config and mongoclient
+		var options = {
+			connectionsPerHost = 555,
+			connectTimeout = 9999,
+			description = "CFMongoDB MongoClientTest"
+		};
+		var config = createObject('component', 'cfmongodb.core.MongoConfig').init(dbName=variables.dbName, mongoFactory=factory, mongoClientOptions=options);
+		var mongoWithOptions = createObject('component','cfmongodb.core.MongoClient').init(config);
+
+		var opts = mongoWithOptions.getMongo().getMongoOptions();
+		debug(opts);
+		assertEquals(options.connectionsPerHost, opts.connectionsPerHost);
+		assertEquals(options.connectTimeout, opts.connectTimeout);
+		assertEquals(options.description, opts.description);
+	}
+
 	private function getIndexesFailOverride(){
 		throw("authentication failed");
 	}
@@ -54,12 +73,12 @@ import cfmongodb.core.*;
 
 	/** test java getters */
 	function testGetMongo(){
-	  assertIsTypeOf( mongo, "cfmongodb.core.Mongo" );
+	  assertIsTypeOf( mongo, "cfmongodb.core.MongoClient" );
 	}
 
 	function getMongo_should_return_underlying_java_Mongo(){
 		var jMongo = mongo.getMongo();
-		assertEquals("com.mongodb.Mongo",jMongo.getClass().getCanonicalName());
+		assertEquals("com.mongodb.MongoClient",jMongo.getClass().getCanonicalName());
 	}
 
 	function getMongoDB_should_return_underlying_java_MongoDB(){
@@ -144,10 +163,52 @@ import cfmongodb.core.*;
 	}
 
 	/**
-	*	Confirm getLastError works and mongo has not changed its response.
+	*	Confirm getLastError works and mongo has not changed its response when we use an Unacknowledged WriteConcern.
 	*/
-	function getLastError_should_return_error_when_expected()
+	function getLastError_should_return_error_when_WriteConcern_Unacknowledged()
 	{
+		var unacknowledged = mongoConfig.getMongoFactory().getObject("com.mongodb.WriteConcern").UNACKNOWLEDGED;
+		var options = {
+			writeConcern = unacknowledged
+		};
+		var config = createObject('component', 'cfmongodb.core.MongoConfig').init(dbName=variables.dbName, mongoFactory=mongoConfig.getMongoFactory(), mongoClientOptions=options);
+		variables.mongo = createObject('component','cfmongodb.core.MongoClient').init(config);
+
+		causeServerError();
+
+		// Get the result of the last activity
+		local.lastActivity = mongo.getLastError();
+
+		// Confirm we did try to duplicate an id.
+		assert(
+			 structKeyExists(local.lastActivity,'code')
+			,'Mongo should be upset a record was duplicated. Check the test.'
+		);
+	}
+
+	/**
+	* @mxunit:expectedException com.mongodb.MongoException$DuplicateKey
+	*/
+	function server_should_error_when_WriteConcern_default(){
+		causeServerError();
+	}
+
+	function whatsUpWithCFBasicDBObject(){
+		var dude = {name="TheDude", abides=true, age=100};
+		var dboDude = mongo.getMongoUtil().toMongo( dude );
+		var mongoDBO = mongoConfig.getMongoFactory().getObject("com.mongodb.BasicDBObject");
+		mongoDBO.putAll(dude);
+		debug( isStruct(dboDude) );
+		debug( isObject(dboDude) );
+		debug( getMetadata(dboDude).getSimpleName() );
+
+
+		debug( dude.toString() );
+		debug( mongoDBO.toString() );
+		debug( dboDude.toString() );
+	}
+
+	private function causeServerError(){
 		var jColl = mongo.getMongoDBCollection(col, mongoConfig);
 		var mongoUtil = mongo.getMongoUtil();
 
@@ -168,30 +229,6 @@ import cfmongodb.core.*;
 		// Let's duplicate the record.
 		local.person = local.peeps[1];
 		jColl.insert([mongoUtil.toMongo(local.person)]);
-
-		// Get the result of the last activity
-		local.lastActivity = mongo.getLastError();
-
-		// Confirm we did try to duplicate an id.
-		assert(
-			 structKeyExists(local.lastActivity,'code')
-			,'Mongo should be upset a record was duplicated. Check the test.'
-		);
-	}
-
-	function whatsUpWithCFBasicDBObject(){
-		var dude = {name="TheDude", abides=true, age=100};
-		var dboDude = mongo.getMongoUtil().toMongo( dude );
-		var mongoDBO = mongoConfig.getMongoFactory().getObject("com.mongodb.BasicDBObject");
-		mongoDBO.putAll(dude);
-		debug( isStruct(dboDude) );
-		debug( isObject(dboDude) );
-		debug( getMetadata(dboDude).getSimpleName() );
-
-
-		debug( dude.toString() );
-		debug( mongoDBO.toString() );
-		debug( dboDude.toString() );
 	}
 
 	private function howToDoSSL(){

@@ -40,7 +40,7 @@ with ColdSpring or WireBox.
 	}
 
 	//initialize the core cfmongodb Mongo object
-	mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
+	mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig);
 
 	//we'll create/use a 'people' collection
 	collection = "people";

@@ -3,7 +3,7 @@
 	dbName = "mongorocks";
 	javaloaderFactory = createObject('component','cfmongodb.core.JavaloaderFactory').init();
 	mongoConfig = createObject('component','cfmongodb.core.MongoConfig').init(dbName=dbName, mongoFactory=javaloaderFactory);
-	mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
+	mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig);
 
 	collectionName = "articles";
 	articles = mongo.getDBCollection( collectionName );

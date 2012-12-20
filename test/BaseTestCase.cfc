@@ -10,7 +10,7 @@
 
 	<cffunction name="beforeTests">
 		<cfset mongoConfig = getMongoConfig()>
-		<cfset variables.mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig)>
+		<cfset variables.mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig)>
 	</cffunction>
 
 	<cffunction name="afterTests">

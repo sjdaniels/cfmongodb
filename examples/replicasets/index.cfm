@@ -63,7 +63,7 @@ Alternately, you can not use javaloaderFactory and use the default factory, whic
 	mongoFactory = javaloaderFactory
 )>
 
-<cfset mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig)>
+<cfset mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig)>
 
 <cfset people = mongo.getDBCollection("people")>
 

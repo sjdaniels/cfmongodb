@@ -42,12 +42,12 @@ then attempted to query against it
 
 	function beforeTests(){
 		 mongoConfig = getMongoConfig( variables.testDatabase );
-		 mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
+		 mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig);
 	}
 
 	function authentication_should_error_when_authentication_fails() {
 
-		var mongo = createObject('component','cfmongodb.core.Mongo');
+		var mongo = createObject('component','cfmongodb.core.MongoClient');
 		//we entirely spoof the authentication internals
 		injectMethod(mongo, this, "authenticateOverride", "authenticate");
 		expectException("com.mongodb.CommandResult$CommandFailure");
@@ -57,7 +57,7 @@ then attempted to query against it
 	}
 
 	function authentication_should_not_error_when_authentication_passes() {
-		var mongo = createObject('component','cfmongodb.core.Mongo');
+		var mongo = createObject('component','cfmongodb.core.MongoClient');
 		injectMethod(mongo, this, "authenticateSuccessOverride", "authenticate");
 
 		mongo.init(mongoConfig);
@@ -66,7 +66,7 @@ then attempted to query against it
 
 	function tearDown(){
 
-		var mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
+		var mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig);
 		try{
 			mongo.dropDatabase();
 		}catch(any e){

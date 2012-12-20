@@ -14,7 +14,7 @@ component extends="wirebox.system.ioc.config.Binder"{
 			.asSingleton();
 
 		map("mongo")
-			.to("cfmongodb.core.Mongo")
+			.to("cfmongodb.core.MongoClient")
 			.initArg(name="mongoConfig", ref='mongoConfig')
 			.asSingleton();
 	}

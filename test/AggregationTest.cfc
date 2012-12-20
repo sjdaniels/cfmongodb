@@ -4,7 +4,7 @@ import cfmongodb.core.*;
 
 
 	function setUp(){
-		mongo = createObject('component','cfmongodb.core.Mongo').init(mongoConfig);
+		mongo = createObject('component','cfmongodb.core.MongoClient').init(mongoConfig);
 		col = 'articles';
 		dbCol = mongo.getDBCollection( col );
 

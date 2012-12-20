@@ -8,7 +8,7 @@
 			<ref bean="mongoFactory" />
 		</constructor-arg>
 	</bean>
-	<bean id="mongo" class="cfmongodb.core.Mongo">
+	<bean id="mongo" class="cfmongodb.core.MongoClient">
 		<constructor-arg name="mongoConfig">
 			<ref bean="mongoConfig" />
 		</constructor-arg>
