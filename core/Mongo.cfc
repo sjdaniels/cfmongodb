@@ -70,11 +70,11 @@
 	/**
 	* Gets a CFMongoDB DBCollection object, which wraps the java DBCollection
 	*/
-	function getDBCollection( collectionName ){
-		if( not structKeyExists( variables.collections, collectionName ) ){
-			variables.collections[ collectionName ] = createObject("component", "DBCollection" ).init( collectionName, this );
+	function getDBCollection( collectionName, dbName=getMongoConfig().getDBName() ){
+		if( not structkeyexists(variables.collections, dbName) or not structKeyExists( variables.collections[dbName], collectionName ) ){
+			variables.collections[ dbName ][ collectionName ] = createObject("component", "DBCollection" ).init( collectionName, this, dbName );
 		}
-		return variables.collections[ collectionName ];
+		return variables.collections[ dbName ][ collectionName ];
 	}
 
 
