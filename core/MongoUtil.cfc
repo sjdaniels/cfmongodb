@@ -55,6 +55,13 @@
 	function newOperationalDBObject(){
 		return dboFactory.newInstance(variables.operationTyper);
 	}
+	
+	/**
+	 * Designate a value to always be evaluated as string
+	 **/
+	function asString(value){
+		return variables.mongoFactory.getObject("net.marcesher.CFStrictTyperString").init(toString(arguments.value));
+	}
 
 	/**
 	* Create a new instance of a CFBasicDBObjectBuilder
