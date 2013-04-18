@@ -51,18 +51,16 @@
 	}
 
 	//get an idea of what the data look like
-	first = articles.find(sort="N",limit=5);
+	first = articles.find(sort={"N"=1},limit=5);
 	writeDump( var=first.asArray(), label="first 5 articles", expand="false" );
 
-	last = articles.find(sort="N",limit=5,skip=95);
+	last = articles.find(sort={"N"=1},limit=5,skip=95);
 	writeDump( var=last.asArray(), label="last 5 articles", expand="false" );
 
 	numArticles = articles.count();
 
 	map = "
 		function(){
-			var totalTopics = this.TOPICS.length;
-			var i = 0;
 			this.TOPICS.forEach(
 				function(z){
 					emit( z, {count: 1} );
@@ -93,12 +91,12 @@
 
 	result = articles.mapReduce( map=map, reduce=reduce, outputTarget="article_topic_rank", options={"finalize"=finalize} );
 
-	writeDump(var=result, label="MapReduceResult object" expand="false");
+	writeDump(var=result, label="MapReduceResult object", expand="false");
 	writeDump(var=result.asArray(), label="mapReduceResult as array... this is the entire article_topic_rank collection", expand="false");
 
 	//now that the article_topic_rank is a full-fledged collection, we can query it just like any other collection:
 	ranks = mongo.getDBCollection("article_topic_rank");
-	sorted = ranks.find(sort="value.count=-1");
+	sorted = ranks.find(sort={"value.count"=-1});
 	writeDump(var=sorted.asArray(), label="Querying the map reduce output collection, sorting by most popular topics");
 
 	mongo.close();
