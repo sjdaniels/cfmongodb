@@ -31,7 +31,9 @@ public class CFStrictTyper implements Typer {
 			return handleArray(value);		
 		} else if( value instanceof Map ){			
 			return handleMap(value);		
-		} 
+		} else if( value instanceof net.marcesher.CFStrictTyperString){
+			return value.toString();
+		}
 		
 		return value;
 	}

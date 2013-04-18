@@ -284,6 +284,28 @@ with ColdSpring or WireBox.
 	writeOutput("<h2>Timestamps from Doc</h2>");
 	writeOutput("Timestamp on first doc: #first['_id'].getTime()# = #mongoUtil.getDateFromDoc(first)#   <br>");
 	writeOutput("Timestamp on last doc: #last['_id'].getTime()# = #mongoUtil.getDateFromDoc(last)#   <br>");
+	
+	
+	//show how to force a value to be a string regardless of its content
+	mongoUtil = mongo.getMongoUtil();
+	celebCol = mongo.getDBCollection( "celebs" );
+	celebCol.remove( {} );
+	//asString forces a value to be string even if it looks like a number
+	celebs = [
+		{NAME = "Warren Beatty", ZIP = mongoUtil.asString("90210")},
+		{NAME = "Paul Newman", ZIP = "90210-9997"},
+		{NAME = "Eddie Murphy", ZIP = "90210-6823"},
+		{NAME = "Bill Murray", ZIP = mongoUtil.asString("90265")},
+		{NAME = "Bill Cosby", ZIP = mongoUtil.asString("90272")}
+	];
+	celebCol.saveAll( celebs );
+
+	writeOutput("<h2>mongoUtil.asString()</h2>");
+	writeOutput("<span style='color:red'>Only needed for ColdFusion!  Railo handles datatypes correctly without this method!</span><br><br>");
+	writeDump(var=celebCol.find(query={}, sort={"ZIP"=1}).asArray(), label="asString", expand="false");
+	writeOutput("The sort by zip works because the datatypes are all string.  If the numeric looking zip codes went in as numeric while the other as string, all the numbers would appear first on the list, followed by strings.");
+	
+	
 
 	//close the Mongo instance. Very important!
 	mongo.close();

@@ -73,6 +73,7 @@
 		<cfargument name="count" type="numeric" required="false" default="5"/>
 		<cfargument name="save" type="boolean" required="false" default="true"/>
 		<cfargument name="name" type="string" required="false" default="unittest"/>
+		<cfargument name="stringTest" type="boolean" required="false" default="false" />
 		<cfscript>
 		var i = 1;
 		var people = [];
@@ -81,9 +82,15 @@
 				"name"=name,
 				"age"=randRange(10,100),
 				"now"=getTickCount(),
+				"networth"=randRange(10,100) * 7.25,
 				"counter"=i,
 				inprocess=false
 			};
+			if (arguments.stringTest) {
+				person["ageAsString"] = mongo.getMongoUtil().asString(person["age"]);
+				person["networthAsString"] = mongo.getMongoUtil().asString(person["networth"]);
+				person["counterAsString"] = mongo.getMongoUtil().asString(person["counter"]);
+			}
 			arrayAppend(people, person);
 		}
 		if(save){
