@@ -1,4 +1,4 @@
-component accessors="true" extends="Mongo" {
+component output="false" accessors="true" extends="Mongo" {
 
 	/**
 	* You can init CFMongoDB in two ways:

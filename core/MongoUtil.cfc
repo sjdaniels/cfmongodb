@@ -1,4 +1,4 @@
-<cfcomponent accessors="true">
+<cfcomponent output="false" accessors="true">
 
 	<cfproperty name="mongoFactory">
 
