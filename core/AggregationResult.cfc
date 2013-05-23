@@ -1,4 +1,4 @@
-component accessors="true"{
+component output="false" accessors="true"{
 
 	/**
 	* use getAggregationOutput() to access the underlying Java object returned by MongoDB. See javadocs for available methods on that object

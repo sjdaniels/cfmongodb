@@ -4,7 +4,13 @@
 		<cfset variables.rootURL = "http://" & cgi.SERVER_NAME & ":" & cgi.SERVER_PORT & "/cfmongodb/examples/">
 		<cfset debug(cgi)>
 
-		<cfset paths = ["gettingstarted.cfm", "aggregation/group.cfm", "aggregation/mapReduce.cfm", "geospatial/geo.cfm", "PeopleList/index.cfm"]>
+		<cfset paths = ["gettingstarted.cfm"
+						, "aggregation/group.cfm"
+						, "aggregation/mapReduce.cfm"
+						, "aggregation/popularity.cfm"
+						, "aggregation/aggregate.cfm"
+						, "geospatial/geo.cfm"
+						, "PeopleList/index.cfm"]>
 
 		<cfset useJavaLoader = variables.factoryType eq "cfmongodb.core.JavaLoaderFactory" ? true : false>
 

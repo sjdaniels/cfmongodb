@@ -19,11 +19,18 @@ import cfmongodb.core.*;
 
 		deleteCol = 'deletetests';
 		dbDeleteCol = mongo.getDBCollection( deleteCol );
+
+		siblingCol = 'siblingtests';
+		dbSiblingCol = mongo.getDBCollection( siblingCol );
+		siblingDbSiblingCol = mongo.getDBCollection( siblingCol, "cfmongodb_tests_sibling" );
+
 		super.setUp();
 	}
 
 	function tearDown(){
 		dbAtomicCol.remove({});
+		dbSiblingCol.drop();
+		siblingDbSiblingCol.drop();
 		super.tearDown();
 	}
 
@@ -302,40 +309,40 @@ import cfmongodb.core.*;
 		var doc = one.asArray()[1];
 		assertEquals( 3, doc.counter );
 	}
-	
+
 	function find_should_handle_asString_correctly() {
 		var people = createPeople(5, true, "unittest", true);
-		var all = dbCol.find({"counterAsString": 1});
+		var all = dbCol.find({"counterAsString"= 1});
 		//expect no results because it's searching as a number
 		assertEquals(0, all.size());
-		var all = dbCol.find({"counterAsString": mongo.getMongoUtil().asString("1")});
+		var all = dbCol.find({"counterAsString"= mongo.getMongoUtil().asString("1")});
 		//expect 1 result because it's searching as a string
 		assertEquals(1, all.size());
 	}
-	
+
 	function find_should_handle_all_types_correctly() {
 		var people = createPeople(5, true, "unittest", true);
 		//make sure there is 5 double
-		all = dbCol.find( {"$and"= [{"name"="unittest"}, 
-										{"networth"={"$exists"=1}}, 
+		all = dbCol.find( {"$and"= [{"name"="unittest"},
+										{"networth"={"$exists"=1}},
 										{"networth"={"$type"=1}}]} ); //type 1 is double
 		assertEquals(5, all.size());
-		
+
 		//make sure there is 5 integer
-		all = dbCol.find( {"$and"= [{"name"="unittest"}, 
-									{"age"={"$exists"=1}}, 
+		all = dbCol.find( {"$and"= [{"name"="unittest"},
+									{"age"={"$exists"=1}},
 									{"age"={"$type"=16}}]} ); //type 16 is integer
 		assertEquals(5, all.size());
-		
+
 		//make sure there is 5 string for "ageAsString"
-		all = dbCol.find( {"$and"= [{"name"="unittest"}, 
-									{"ageAsString"={"$exists"=1}}, 
+		all = dbCol.find( {"$and"= [{"name"="unittest"},
+									{"ageAsString"={"$exists"=1}},
 									{"ageAsString"={"$type"=2}}]} ); //type 2 is string
 		assertEquals(5, all.size());
-		
+
 		//make sure there is 5 string for "networthAsString"
-		all = dbCol.find( {"$and"= [{"name"="unittest"}, 
-									{"networthAsString"={"$exists"=1}}, 
+		all = dbCol.find( {"$and"= [{"name"="unittest"},
+									{"networthAsString"={"$exists"=1}},
 									{"networthAsString"={"$type"=2}}]} ); //type 2 is stirng
 		assertEquals(5, all.size());
 	}
@@ -546,6 +553,27 @@ import cfmongodb.core.*;
 
 	private function getIndexesFailOverride(){
 		throw("authentication failed");
+	}
+
+
+	/*    SISTER DB TEST   */
+	function getSiblingDB_returns_collection_from_sibling_db(){
+		var testdocs = [
+			{ "name"="test1" },
+			{ "name"="test2" },
+			{ "name"="test3" },
+			{ "name"="test4" }
+		];
+
+		// insert test docs into sibling database's collection
+		siblingDbSiblingCol.saveAll(testdocs);
+
+		local.thiscount = dbSiblingCol.count();
+		local.siblingcount = siblingdbSiblingCol.count();
+
+		assertTrue(local.thiscount eq 0, "Local sibling collection should have no docs, has #local.thiscount#.");
+		assertTrue(local.siblingcount eq 4, "Sibling collection should have 4 docs, has #local.siblingcount#.");
+		assertTrue(local.thiscount neq local.siblingcount, "Local sibling collection should have no docs, sibling should have 4.");
 	}
 
 

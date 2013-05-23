@@ -1,4 +1,4 @@
-<cfcomponent accessors="true">
+<cfcomponent accessors="true" output="false">
 
 	<cfproperty name="mongoUtil">
 
@@ -13,12 +13,15 @@
 	/**
 	* Not intended to be invoked directly. Always fetch DBCollection objects via mongo.getDBCollection( collectionName )
 	*/
-	function init( collectionName, mongo ){
+	function init( collectionName, mongo, dbName ){
 		structAppend( variables, arguments );
 		variables.mongoUtil = mongo.getMongoUtil();
 		variables.mongoConfig = mongo.getMongoConfig();
 
-		variables.mongoDB = getMongoDB();
+		variables.mongoDB = mongo.getMongoDB();
+        if (structkeyexists(arguments,"dbName") and arguments.dbName neq variables.mongoConfig.getDBName())
+            variables.mongoDB = mongo.getMongoDB().getSisterDB(arguments.dbName);
+
 		variables.collection = mongoDB.getCollection( collectionName );
 
 		return this;
@@ -43,7 +46,7 @@
 	* Get the underlying Java driver's DB object
 	*/
 	private function getMongoDB(){
-		return variables.mongo.getMongo().getDb( variables.mongo.getMongoConfig().getDBName() );
+        return variables.mongoDB;
 	}
 
 	/**

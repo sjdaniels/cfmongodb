@@ -197,7 +197,7 @@ import cfmongodb.core.*;
 	}
 
 	/**
-	* @mxunit:expectedException com.mongodb.CommandResult$CommandFailure
+	* @mxunit:expectedException com.mongodb.CommandFailureException
 	*/
 	function aggregate_throws_error_with_bad_command(){
 		var op =  { "group"={ "_id"="$STATUS", "total"={ "$sum"=1 } } };
