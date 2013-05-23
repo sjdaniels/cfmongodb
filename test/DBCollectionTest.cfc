@@ -19,11 +19,18 @@ import cfmongodb.core.*;
 
 		deleteCol = 'deletetests';
 		dbDeleteCol = mongo.getDBCollection( deleteCol );
+
+		siblingCol = 'siblingtests';
+		dbSiblingCol = mongo.getDBCollection( siblingCol );
+		siblingDbSiblingCol = mongo.getDBCollection( siblingCol, "cfmongodb_tests_sibling" );
+
 		super.setUp();
 	}
 
 	function tearDown(){
 		dbAtomicCol.remove({});
+		dbSiblingCol.drop();
+		siblingDbSiblingCol.drop();
 		super.tearDown();
 	}
 
@@ -546,6 +553,27 @@ import cfmongodb.core.*;
 
 	private function getIndexesFailOverride(){
 		throw("authentication failed");
+	}
+
+
+	/*    SISTER DB TEST   */
+	function getSiblingDB_returns_collection_from_sibling_db(){
+		var testdocs = [
+			{ "name":"test1" },
+			{ "name":"test2" },
+			{ "name":"test3" },
+			{ "name":"test4" }
+		];
+
+		// insert test docs into sibling database's collection
+		siblingDbSiblingCol.saveAll(testdocs);
+
+		local.thiscount = dbSiblingCol.count();
+		local.siblingcount = siblingdbSiblingCol.count();
+
+		assertTrue(local.thiscount eq 0, "Local sibling collection should have no docs, has #local.thiscount#.")
+		assertTrue(local.siblingcount eq 4, "Sibling collection should have 4 docs, has #local.siblingcount#.")
+		assertTrue(local.thiscount neq local.siblingcount, "Local sibling collection should have no docs, sibling should have 4.")
 	}
 
 
