@@ -559,10 +559,10 @@ import cfmongodb.core.*;
 	/*    SISTER DB TEST   */
 	function getSiblingDB_returns_collection_from_sibling_db(){
 		var testdocs = [
-			{ "name":"test1" },
-			{ "name":"test2" },
-			{ "name":"test3" },
-			{ "name":"test4" }
+			{ "name"="test1" },
+			{ "name"="test2" },
+			{ "name"="test3" },
+			{ "name"="test4" }
 		];
 
 		// insert test docs into sibling database's collection
@@ -571,9 +571,9 @@ import cfmongodb.core.*;
 		local.thiscount = dbSiblingCol.count();
 		local.siblingcount = siblingdbSiblingCol.count();
 
-		assertTrue(local.thiscount eq 0, "Local sibling collection should have no docs, has #local.thiscount#.")
-		assertTrue(local.siblingcount eq 4, "Sibling collection should have 4 docs, has #local.siblingcount#.")
-		assertTrue(local.thiscount neq local.siblingcount, "Local sibling collection should have no docs, sibling should have 4.")
+		assertTrue(local.thiscount eq 0, "Local sibling collection should have no docs, has #local.thiscount#.");
+		assertTrue(local.siblingcount eq 4, "Sibling collection should have 4 docs, has #local.siblingcount#.");
+		assertTrue(local.thiscount neq local.siblingcount, "Local sibling collection should have no docs, sibling should have 4.");
 	}
 
 
