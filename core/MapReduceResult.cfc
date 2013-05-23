@@ -1,4 +1,4 @@
-component accessors="true"{
+component output="false" accessors="true"{
 
 	property name="dbCommand";
 	property name="commandResult";
