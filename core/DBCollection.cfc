@@ -435,7 +435,7 @@
 	*/
 	public array function ensureIndex(array fields, unique=false, dropDups=false, sparse=false, background=false, name ){
 	 	var pos = 1;
-	 	var doc = {};
+	 	var doc = [];
 	 	var options = {};
 		var indexName = "";
 		var fieldName = "";
@@ -443,10 +443,10 @@
 	 	for( pos = 1; pos LTE arrayLen(fields); pos++ ){
 			if( isSimpleValue(fields[pos]) ){
 				fieldName = fields[pos];
-				doc[ fieldName ] = 1;
+				arrayappend(doc,{"#fieldName#"=1});
 			} else {
 				fieldName = structKeyList(fields[pos]);
-				doc[ fieldName ] = fields[pos][fieldName];
+				arrayappend(doc,{"#fieldName#"=fields[pos][fieldName]});
 			}
 			indexName = listAppend( indexName, fieldName, "_");
 	 	}
@@ -455,7 +455,7 @@
 	 	else indexName = arguments.name;
 
 		options = { "unique" = unique, "name" = indexName, "dropDups" = dropDups, "sparse" = sparse, "background" = background};
-	 	collection.ensureIndex( toMongo( doc ), toMongo( options ) );
+	 	collection.ensureIndex( mongoUtil.createOrderedDBObject( doc ), toMongo( options ) );
 
 	 	return getIndexes(collectionName, mongoConfig);
 	}
