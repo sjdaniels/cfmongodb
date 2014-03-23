@@ -568,7 +568,7 @@ import cfmongodb.core.*;
 
 		dbCol.ensureIndex(fields=local.fields,name="multikeytest");
 		local.indexes = dbCol.getIndexes();
-		local.index = dbCol.getIndexes()[2];
+		local.index = local.indexes[2];
 
 		var i = 1;
 		for (var key in local.index["key"]){
@@ -582,7 +582,7 @@ import cfmongodb.core.*;
 
 		dbCol.ensureIndex(fields=["somethingsparse"],name="sparsetest",sparse=true);
 		local.indexes = dbCol.getIndexes();
-		local.index = dbCol.getIndexes()[2];
+		local.index = local.indexes[2];
 
 		assertTrue( local.index["sparse"], "index should be sparse" );
 	}
@@ -592,7 +592,7 @@ import cfmongodb.core.*;
 
 		dbCol.ensureIndex(fields=["somethingunique"],name="uniquetest",unique=true,sparse=true);
 		local.indexes = dbCol.getIndexes();
-		local.index = dbCol.getIndexes()[2];
+		local.index = local.indexes[2];
 
 		assertTrue( local.index["unique"], "index should be unique" );
 	}
@@ -604,7 +604,7 @@ import cfmongodb.core.*;
 
 		dbCol.ensureIndex(fields=["someindex"],name=indexname);
 		local.indexes = dbCol.getIndexes();
-		local.index = dbCol.getIndexes()[2];
+		local.index = local.indexes[2];
 
 		assertEquals( indexname, local.index["name"], "index should have correct name" );
 	}
