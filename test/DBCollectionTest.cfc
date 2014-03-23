@@ -551,6 +551,64 @@ import cfmongodb.core.*;
 		assertTrue( arrayLen(result) GT 1, "Should be at least 2: 1 for the _id, and one for the index we just added");
 	}
 
+	function ensureIndex_should_create_index(){
+		dbCol.dropIndexes();
+		local.indexesStart = dbCol.getIndexes();
+
+		dbCol.ensureIndex(fields=["newfield"],name="newfield")
+		local.indexesAfter = dbCol.getIndexes();
+
+		assertEquals( arraylen(local.indexesAfter), arraylen(local.indexesStart)+1, "Indexes length should be incremented" );
+	}
+
+	function ensureIndex_should_create_multikey_index_in_specified_order(){
+		dbCol.dropIndexes();
+
+		local.fields = ["field_1", "field_2", "field_3"];
+
+		dbCol.ensureIndex(fields=local.fields,name="multikeytest");
+		local.indexes = dbCol.getIndexes();
+		local.index = dbCol.getIndexes()[2];
+
+		var i = 1;
+		for (var key in local.index["key"]){
+			assertEquals( local.fields[i], key, "Key should be in proper position in index" );
+			i++;
+		}
+	}
+
+	function ensureIndex_sparse_creates_sparse_index(){
+		dbCol.dropIndexes();
+
+		dbCol.ensureIndex(fields=["somethingsparse"],name="sparsetest",sparse=true);
+		local.indexes = dbCol.getIndexes();
+		local.index = dbCol.getIndexes()[2];
+
+		assertTrue( local.index["sparse"], "index should be sparse" );
+	}
+
+	function ensureIndex_unique_creates_unique_index(){
+		dbCol.dropIndexes();
+
+		dbCol.ensureIndex(fields=["somethingunique"],name="uniquetest",unique=true,sparse=true);
+		local.indexes = dbCol.getIndexes();
+		local.index = dbCol.getIndexes()[2];
+
+		assertTrue( local.index["unique"], "index should be unique" );
+	}
+
+	function ensureIndex_uses_specified_name(){
+		var indexname = "obiwankenobi";
+
+		dbCol.dropIndexes();
+
+		dbCol.ensureIndex(fields=["someindex"],name=indexname);
+		local.indexes = dbCol.getIndexes();
+		local.index = dbCol.getIndexes()[2];
+
+		assertEquals( indexname, local.index["name"], "index should have correct name" );
+	}
+
 	private function getIndexesFailOverride(){
 		throw("authentication failed");
 	}
