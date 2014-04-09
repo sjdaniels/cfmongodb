@@ -322,6 +322,7 @@ import cfmongodb.core.*;
 
 	function find_should_handle_all_types_correctly() {
 		var people = createPeople(5, true, "unittest", true);
+
 		//make sure there is 5 double
 		all = dbCol.find( {"$and"= [{"name"="unittest"},
 										{"networth"={"$exists"=1}},

@@ -60,7 +60,7 @@
 	 * Designate a value to always be evaluated as string
 	 **/
 	function asString(value){
-		if( server.coldfusion.productname eq "Railo") return value;
+		if( server.coldfusion.productname eq "Railo") return javacast("string",value);
 		return variables.mongoFactory.getObject("net.marcesher.CFStrictTyperString").init(toString(arguments.value));
 	}
 
